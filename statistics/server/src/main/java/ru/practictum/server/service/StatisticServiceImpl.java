@@ -1,8 +1,12 @@
 package ru.practictum.server.service;
 
-import org.springframework.transaction.annotation.Transactional;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import ru.practictum.server.entity.Statistic;
+import ru.practictum.server.mapper.StatisticMapper;
+import ru.practictum.server.repository.StatisticRepository;
 import ru.practicum.dto.StatisticDtoCreate;
 import ru.practicum.dto.StatisticDtoResponse;
 
@@ -14,10 +18,18 @@ import java.util.List;
 @Slf4j
 public class StatisticServiceImpl implements StatisticService {
 
+    private final StatisticRepository repository;
+
+    @Autowired
+    public StatisticServiceImpl(StatisticRepository repository) {
+        this.repository = repository;
+    }
+
     @Override
     @Transactional
     public StatisticDtoCreate create(StatisticDtoCreate statistic) {
-        return null;
+        Statistic statisticDtoCreate = repository.save(StatisticMapper.mapToStatistic(statistic));
+        return StatisticMapper.maToStatisticDtoCreate(statisticDtoCreate);
     }
 
 

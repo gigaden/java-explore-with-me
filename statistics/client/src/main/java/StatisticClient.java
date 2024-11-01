@@ -42,15 +42,16 @@ public class StatisticClient {
                                                           List<String> uris,
                                                           boolean unique) {
         Collection<StatisticDtoResponse> statistics = restClient.get().uri(uriBuilder -> uriBuilder
-                .path(getUri)
-                .queryParam("start", start)
-                .queryParam("end", end)
-                .queryParam("uris", uris)
-                .queryParam("unique", unique)
-                .build())
+                        .path(getUri)
+                        .queryParam("start", start)
+                        .queryParam("end", end)
+                        .queryParam("uris", uris)
+                        .queryParam("unique", unique)
+                        .build())
                 .header("Content-Type", "application/json")
                 .retrieve()
-                .body(new ParameterizedTypeReference<>() {});
+                .body(new ParameterizedTypeReference<>() {
+                });
 
         return statistics;
     }
