@@ -2,6 +2,7 @@ package ru.practictum.server.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practictum.server.entity.Statistic;
@@ -11,6 +12,7 @@ import ru.practicum.dto.StatisticDtoCreate;
 import ru.practicum.dto.StatisticDtoResponse;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -35,8 +37,16 @@ public class StatisticServiceImpl implements StatisticService {
 
     @Override
     @Transactional(readOnly = true)
-    public Collection<StatisticDtoResponse> getAll(LocalDateTime start, LocalDateTime end,
+    public Collection<StatisticDtoResponse> getAll(LocalDateTime start,
+                                                   LocalDateTime end,
                                                    List<String> uri, boolean unique) {
-        return List.of();
+        /* Если список с ури не передан, то делаем его специально налл для передачи в запрос репозитория
+        именно нал и получения списка всех объектов */
+        List<String> uriFilter = uri.isEmpty() ? null : uri;
+
+        List<StatisticDtoResponse> statistics = repository
+                    .getAllWhenIpUniqueIsFalse(start, end, uriFilter);
+
+        return statistics;
     }
 }
