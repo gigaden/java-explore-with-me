@@ -15,7 +15,10 @@ import ru.practictum.server.service.StatisticService;
 import ru.practicum.dto.StatisticDtoCreate;
 import ru.practicum.dto.StatisticDtoResponse;
 
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Collection;
 import java.util.List;
 
@@ -30,6 +33,8 @@ public class StatisticController {
         this.service = service;
     }
 
+
+    // Создание новой статистики
     @PostMapping("/hit")
     public ResponseEntity<StatisticDtoCreate> create(@Valid @RequestBody StatisticDtoCreate statisticDtoCreate) {
         StatisticDtoCreate statistic = service.create(statisticDtoCreate);
@@ -37,12 +42,23 @@ public class StatisticController {
     }
 
 
+    // Получаем статистику
     @GetMapping("/stats")
-    public ResponseEntity<Collection<StatisticDtoResponse>> getAll(@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime start,
-                                                                   @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime end,
+    public ResponseEntity<Collection<StatisticDtoResponse>> getAll(@RequestParam String start,
+                                                                   @RequestParam String end,
                                                                    @RequestParam(defaultValue = "") List<String> uris,
                                                                    @RequestParam(defaultValue = "false") boolean unique) {
-        Collection<StatisticDtoResponse> statistics = service.getAll(start, end, uris, unique);
+
+        // Декодируем строки и переводим их в даты
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        LocalDateTime decodedStart = LocalDateTime.parse(URLDecoder.decode(start, StandardCharsets.UTF_8), formatter);
+        LocalDateTime decodedEnd = LocalDateTime.parse(URLDecoder.decode(end, StandardCharsets.UTF_8), formatter);
+
+        Collection<StatisticDtoResponse> statistics = service.getAll(
+                decodedStart,
+                decodedEnd,
+                uris,
+                unique);
         return new ResponseEntity<>(statistics, HttpStatus.OK);
     }
 }
