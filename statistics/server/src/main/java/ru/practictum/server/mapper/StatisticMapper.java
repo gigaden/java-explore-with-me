@@ -2,7 +2,6 @@ package ru.practictum.server.mapper;
 
 import ru.practictum.server.entity.Statistic;
 import ru.practicum.dto.StatisticDtoCreate;
-import ru.practicum.dto.StatisticDtoResponse;
 
 public class StatisticMapper {
 
@@ -21,14 +20,6 @@ public class StatisticMapper {
                 .uri(stat.getUri())
                 .ip(stat.getIp())
                 .timestamp(stat.getTimestamp())
-                .build();
-    }
-
-    public static StatisticDtoResponse maToStatisticDtoResponse(Statistic stat) {
-        return StatisticDtoResponse.builder()
-                .app(stat.getApp())
-                .uri(stat.getUri())
-                .hits(1)
                 .build();
     }
 }
