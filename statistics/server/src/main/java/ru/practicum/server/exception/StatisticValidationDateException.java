@@ -1,4 +1,4 @@
-package ru.practictum.server.exception;
+package ru.practicum.server.exception;
 
 public class StatisticValidationDateException extends RuntimeException {
     public StatisticValidationDateException(String message) {

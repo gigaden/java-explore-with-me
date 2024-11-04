@@ -1,4 +1,4 @@
-package ru.practictum.server.service;
+package ru.practicum.server.service;
 
 import ru.practicum.dto.StatisticDtoCreate;
 import ru.practicum.dto.StatisticDtoResponse;

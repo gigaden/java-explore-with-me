@@ -1,4 +1,4 @@
-package ru.practictum.server.deserializer;
+package ru.practicum.server.deserializer;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
