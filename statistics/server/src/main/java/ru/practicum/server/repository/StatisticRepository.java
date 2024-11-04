@@ -18,6 +18,7 @@ public interface StatisticRepository extends JpaRepository<Statistic, Long> {
             WHERE timestamp BETWEEN ?1 AND ?2
             AND (?3 IS NULL OR s.uri IN ?3)
             GROUP BY s.uri, s.app
+            ORDER BY COUNT(s.ip) DESC
             """)
     List<StatisticDtoResponse> getAllStatisticDtoResponse(LocalDateTime start,
                                                           LocalDateTime end,
