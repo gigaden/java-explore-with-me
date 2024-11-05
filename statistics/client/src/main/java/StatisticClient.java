@@ -1,6 +1,12 @@
+import exception.ClientRequestException;
+import exception.ServerRequestException;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
+import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
 import ru.practicum.dto.StatisticDtoCreate;
 import ru.practicum.dto.StatisticDtoResponse;
@@ -14,18 +20,19 @@ import java.util.List;
 
 
 @Slf4j
+@Component
 public class StatisticClient {
 
     private final RestClient restClient;
     private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
-
-    //@Value("${statistic-server.url}")
-    private final String baseUrl = "http://localhost:9090";
+    @Value("${statistic-server.url}")
+    private String baseUrl;
     private final String postUri = "/hit";
     private final String getUri = "/stats";
 
-    public StatisticClient() {
+    @Autowired
+    public StatisticClient(@Value("${statistic-server.url}") String baseUrl) {
         restClient = RestClient.builder()
                 .baseUrl(baseUrl)
                 .build();
@@ -40,6 +47,14 @@ public class StatisticClient {
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(statisticDtoCreate)
                 .retrieve()
+                .onStatus(HttpStatusCode::is4xxClientError, (request, response) -> {
+                    throw new ClientRequestException(String.format("Ошибка клиента: %s %s", response.getStatusCode(),
+                            response.getHeaders()));
+                })
+                .onStatus(HttpStatusCode::is5xxServerError, (request, response) -> {
+                    throw new ServerRequestException(String.format("Ошибка сервера: %s %s", response.getStatusCode(),
+                            response.getHeaders()));
+                })
                 .body(StatisticDtoCreate.class);
         log.info("Запрос на добавление статистики отправлен {}.", statisticDtoCreate);
 
@@ -67,6 +82,14 @@ public class StatisticClient {
                         .build())
                 .header("Content-Type", "application/json")
                 .retrieve()
+                .onStatus(HttpStatusCode::is4xxClientError, (request, response) -> {
+                    throw new ClientRequestException(String.format("Ошибка клиента: %s %s", response.getStatusCode(),
+                            response.getHeaders()));
+                })
+                .onStatus(HttpStatusCode::is5xxServerError, (request, response) -> {
+                    throw new ServerRequestException(String.format("Ошибка сервера: %s %s", response.getStatusCode(),
+                            response.getHeaders()));
+                })
                 .body(new ParameterizedTypeReference<>() {
                 });
         log.info("Получены записи статистики с параметрами: start={}, end={}, uri={}, unique={}",
@@ -75,8 +98,9 @@ public class StatisticClient {
         return statistics;
     }
 
+    // Для проверки, что клиент работает
     public static void main(String[] args) {
-        final StatisticClient client = new StatisticClient();
+        final StatisticClient client = new StatisticClient("http://localhost:9090");
         final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         Collection<StatisticDtoResponse> result = client
                 .getStatistics(LocalDateTime.parse("2022-09-06 11:00:23", formatter),
