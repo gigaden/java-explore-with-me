@@ -23,6 +23,22 @@ public class ErrorHandler {
         return buildErrorResponse(e.getMessage());
     }
 
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public HashMap<String, String> handleCategoryNotFound(final CategoryNotFoundException e, WebRequest request) {
+        log.error("Ошибка 404 CategoryNotFoundException: {} в запросе {}",
+                e.getMessage(), request.getDescription(false));
+        return buildErrorResponse(e.getMessage());
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public HashMap<String, String> handleCategoryValidation(final CategoryValidationException e, WebRequest request) {
+        log.error("Ошибка 400 CategoryValidationException: {} в запросе {}",
+                e.getMessage(), request.getDescription(false));
+        return buildErrorResponse(e.getMessage());
+    }
+
     public HashMap<String, String> buildErrorResponse(String message) {
         HashMap<String, String> response = new HashMap<>();
         response.put("error", message);
