@@ -3,8 +3,10 @@ package ru.practicum.ewm.service;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.ewm.dto.UserRequestDto;
 import ru.practicum.ewm.entity.User;
+import ru.practicum.ewm.exception.CategoryNotFoundException;
 import ru.practicum.ewm.exception.UserNotFoundException;
 import ru.practicum.ewm.mapper.UserMapper;
 import ru.practicum.ewm.repository.UserRepository;
@@ -14,6 +16,7 @@ import java.util.List;
 
 @Service("userServiceImpl")
 @Slf4j
+@Transactional(readOnly = true)
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
@@ -29,7 +32,7 @@ public class UserServiceImpl implements UserService {
         log.info("Пытаюсь получить коллекцию всех пользователей");
         List<User> users;
         if (ids != null && !ids.isEmpty()) {
-           users = userRepository.findUsersByIdIn(ids);
+            users = userRepository.findUsersByIdIn(ids);
         } else {
             users = userRepository.findUsersInterval(size, from);
         }
@@ -38,6 +41,20 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public User getUserById(long userId) {
+        log.info("Пытаюсь получить  пользователя с id = {}", userId);
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> {
+                    log.warn("Пользователь с id = {} не найден", userId);
+                    return new CategoryNotFoundException(String.format("Пользоатель с id = %d не найден", userId));
+                });
+        log.info("Пользователь с id = {} получен", userId);
+
+        return user;
+    }
+
+    @Override
+    @Transactional
     public User createUser(UserRequestDto userDto) {
         log.info("Пытаюсь создать нового пользователя {}", userDto);
         User user = userRepository.save(UserMapper.mapDtoToUser(userDto));
@@ -46,6 +63,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public void deleteUser(long userId) {
         checkUserIsExist(userId);
         log.info("Пытаюсь удалить пользователя id = {}", userId);

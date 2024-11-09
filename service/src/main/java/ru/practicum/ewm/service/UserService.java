@@ -8,6 +8,8 @@ import java.util.List;
 
 public interface UserService {
 
+    User getUserById(long userId);
+
     Collection<User> getAllUsers(List<Long> ids, int from, int size);
 
     User createUser(UserRequestDto user);

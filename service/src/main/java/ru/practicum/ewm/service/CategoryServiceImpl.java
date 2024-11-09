@@ -2,6 +2,7 @@ package ru.practicum.ewm.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.ewm.dto.CategoryRequestDto;
 import ru.practicum.ewm.entity.Category;
 import ru.practicum.ewm.exception.CategoryNotFoundException;
@@ -14,6 +15,7 @@ import java.util.List;
 
 @Slf4j
 @Service("categoryServiceImpl")
+@Transactional(readOnly = true)
 public class CategoryServiceImpl implements CategoryService {
 
     CategoryRepository categoryRepository;
@@ -23,6 +25,7 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
+    @Transactional
     public Category createCategory(CategoryRequestDto dto) {
         log.info("Пытаюсь добавить новую категорию {}", dto);
         checkCategoryName(dto.getName());
@@ -33,6 +36,7 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
+    @Transactional
     public Category updateCategory(long catId, CategoryRequestDto categoryDto) {
         log.info("Пытаюсь обновить категорию с id = {}", catId);
         checkCategoryName(categoryDto.getName());
@@ -49,6 +53,7 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
+    @Transactional
     public void deleteCategory(long catId) {
         log.info("Пытаюсь удалить категорию с id = {}", catId);
         checkCategoryIsExist(catId);
