@@ -2,10 +2,8 @@ package ru.practicum.ewm.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import ru.practicum.ewm.dto.RequestUserDto;
+import ru.practicum.ewm.dto.UserRequestDto;
 import ru.practicum.ewm.entity.User;
 import ru.practicum.ewm.exception.UserNotFoundException;
 import ru.practicum.ewm.mapper.UserMapper;
@@ -40,7 +38,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User createUser(RequestUserDto userDto) {
+    public User createUser(UserRequestDto userDto) {
         log.info("Пытаюсь создать нового пользователя {}", userDto);
         User user = userRepository.save(UserMapper.mapDtoToUser(userDto));
         log.info("Создан новый пользователь {}", user);

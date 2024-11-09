@@ -1,14 +1,19 @@
 package ru.practicum.ewm.service;
 
-import ru.practicum.ewm.dto.RequestCategoryDto;
-import ru.practicum.ewm.dto.ResponseCategoryDto;
+import ru.practicum.ewm.dto.CategoryRequestDto;
 import ru.practicum.ewm.entity.Category;
+
+import java.util.Collection;
 
 public interface CategoryService {
 
-    Category createCategory(RequestCategoryDto category);
+    Category createCategory(CategoryRequestDto category);
 
-    Category updateCategory(long catId, RequestCategoryDto categoryDto);
+    Category updateCategory(long catId, CategoryRequestDto categoryDto);
 
     void deleteCategory(long catId);
+
+    Collection<Category> getAll(int from, int size);
+
+    Category getById(long catId);
 }

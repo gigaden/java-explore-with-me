@@ -1,21 +1,21 @@
 package ru.practicum.ewm.mapper;
 
-import ru.practicum.ewm.dto.RequestUserDto;
-import ru.practicum.ewm.dto.ResponseUserDto;
+import ru.practicum.ewm.dto.UserRequestDto;
+import ru.practicum.ewm.dto.UserResponseDto;
 import ru.practicum.ewm.entity.User;
 
 public class UserMapper {
 
-    public static ResponseUserDto mapToResponseUserDto(User user) {
+    public static UserResponseDto mapToResponseUserDto(User user) {
 
-        return ResponseUserDto.builder()
+        return UserResponseDto.builder()
                 .id(user.getId())
                 .email(user.getEmail())
                 .name(user.getName())
                 .build();
     }
 
-    public static User mapDtoToUser(RequestUserDto dto) {
+    public static User mapDtoToUser(UserRequestDto dto) {
 
         return User.builder()
                 .email(dto.getEmail())

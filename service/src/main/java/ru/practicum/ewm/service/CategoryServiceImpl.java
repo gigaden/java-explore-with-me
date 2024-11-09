@@ -2,14 +2,14 @@ package ru.practicum.ewm.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import ru.practicum.ewm.dto.RequestCategoryDto;
+import ru.practicum.ewm.dto.CategoryRequestDto;
 import ru.practicum.ewm.entity.Category;
 import ru.practicum.ewm.exception.CategoryNotFoundException;
 import ru.practicum.ewm.exception.CategoryValidationException;
-import ru.practicum.ewm.exception.ValidationException;
 import ru.practicum.ewm.mapper.CategoryMapper;
 import ru.practicum.ewm.repository.CategoryRepository;
 
+import java.util.Collection;
 import java.util.List;
 
 @Slf4j
@@ -23,7 +23,7 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public Category createCategory(RequestCategoryDto dto) {
+    public Category createCategory(CategoryRequestDto dto) {
         log.info("Пытаюсь добавить новую категорию {}", dto);
         checkCategoryName(dto.getName());
         Category newCategory = categoryRepository.save(CategoryMapper.mapDtoToCategory(dto));
@@ -33,7 +33,7 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public Category updateCategory(long catId, RequestCategoryDto categoryDto) {
+    public Category updateCategory(long catId, CategoryRequestDto categoryDto) {
         log.info("Пытаюсь обновить категорию с id = {}", catId);
         checkCategoryName(categoryDto.getName());
         Category category = categoryRepository.findById(catId)
@@ -54,6 +54,28 @@ public class CategoryServiceImpl implements CategoryService {
         checkCategoryIsExist(catId);
         categoryRepository.deleteById(catId);
         log.info("Категория с id = {} удалена", catId);
+    }
+
+    @Override
+    public Collection<Category> getAll(int from, int size) {
+        log.info("Пытаюсь получить категории в диапазаоне from = {} size = {}", from, size);
+        Collection<Category> categories = categoryRepository.findCategoriesBetweenFromAndSize(from, size);
+        log.info("Категории в диапазаоне from = {} size = {} получены", from, size);
+
+        return categories;
+    }
+
+    @Override
+    public Category getById(long catId) {
+        log.info("Пытаюсь получить категорию с id = {}", catId);
+        Category category = categoryRepository.findById(catId)
+                .orElseThrow(() -> {
+                    log.warn("Категория с id = {} не найдена", catId);
+                    return new CategoryNotFoundException(String.format("Категория с id = %d не найдена", catId));
+                });
+        log.info("Категория с id = {} получена", catId);
+
+        return category;
     }
 
     // Проверяем уникальность имени категории

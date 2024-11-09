@@ -12,8 +12,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import ru.practicum.ewm.dto.RequestCategoryDto;
-import ru.practicum.ewm.dto.ResponseCategoryDto;
+import ru.practicum.ewm.dto.CategoryRequestDto;
+import ru.practicum.ewm.dto.CategoryResponseDto;
 import ru.practicum.ewm.entity.Category;
 import ru.practicum.ewm.mapper.CategoryMapper;
 import ru.practicum.ewm.service.CategoryService;
@@ -33,7 +33,7 @@ public class AdminCategoryController {
 
     // Добавляем категорию. Обратите внимание: имя категории должно быть уникальным
     @PostMapping
-    public ResponseEntity<ResponseCategoryDto> createCategory(@Valid @RequestBody RequestCategoryDto category) {
+    public ResponseEntity<CategoryResponseDto> createCategory(@Valid @RequestBody CategoryRequestDto category) {
 
         Category newCategory = categoryService.createCategory(category);
 
@@ -44,8 +44,8 @@ public class AdminCategoryController {
 
     // Обновляем категорию. Обратите внимание: имя категории должно быть уникальным
     @PatchMapping("/{catId}")
-    public ResponseEntity<ResponseCategoryDto> updateCategory(@PathVariable long catId,
-                                                              @Valid @RequestBody RequestCategoryDto categoryDto) {
+    public ResponseEntity<CategoryResponseDto> updateCategory(@PathVariable long catId,
+                                                              @Valid @RequestBody CategoryRequestDto categoryDto) {
 
         System.out.println("yes");
         Category category = categoryService.updateCategory(catId, categoryDto);
