@@ -18,7 +18,7 @@ public class EventResponseDto {
 
     private String annotation;
 
-    private Category category;
+    private CategoryResponseDto category;
 
     private int confirmedRequests;
 
@@ -30,7 +30,7 @@ public class EventResponseDto {
 
     private long id;
 
-    private User initiator;
+    private UserResponseDto initiator;
 
     private Location location;
 

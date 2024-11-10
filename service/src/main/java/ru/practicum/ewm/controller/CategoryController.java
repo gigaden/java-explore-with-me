@@ -28,8 +28,8 @@ public class CategoryController {
     /*Получаем все категории.
      В случае, если по заданным фильтрам не найдено ни одной категории, возвращает пустой список*/
     @GetMapping
-    public ResponseEntity<Collection<CategoryResponseDto>> getAll(@RequestParam int from,
-                                                                  @RequestParam int size) {
+    public ResponseEntity<Collection<CategoryResponseDto>> getAll(@RequestParam(defaultValue = "0") int from,
+                                                                  @RequestParam(defaultValue = "10") int size) {
 
         Collection<CategoryResponseDto> categories = categoryService.getAll(from, size).stream()
                 .map(CategoryMapper::mapToCategoryDto).toList();

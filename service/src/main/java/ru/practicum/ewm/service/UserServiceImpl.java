@@ -72,7 +72,8 @@ public class UserServiceImpl implements UserService {
     }
 
     // Проверяем, что пользователь существует
-    public void checkUserIsExist(Long id) {
+    @Override
+    public void checkUserIsExist(long id) {
         log.info("Проверяем существует ли пользователь с id={}", id);
         if (userRepository.findById(id).isEmpty()) {
             throw new UserNotFoundException(String.format("Пользователь с id=%d не найден", id));

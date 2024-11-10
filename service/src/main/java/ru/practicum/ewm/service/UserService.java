@@ -15,4 +15,6 @@ public interface UserService {
     User createUser(UserRequestDto user);
 
     void deleteUser(long userId);
+
+    void checkUserIsExist(long id);
 }

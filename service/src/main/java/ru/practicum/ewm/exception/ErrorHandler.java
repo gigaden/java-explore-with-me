@@ -25,6 +25,14 @@ public class ErrorHandler {
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.NOT_FOUND)
+    public HashMap<String, String> handleEventNotFound(final EventNotFoundException e, WebRequest request) {
+        log.error("Ошибка 404 EventFoundException: {} в запросе {}",
+                e.getMessage(), request.getDescription(false));
+        return buildErrorResponse(e.getMessage());
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.NOT_FOUND)
     public HashMap<String, String> handleCategoryNotFound(final CategoryNotFoundException e, WebRequest request) {
         log.error("Ошибка 404 CategoryNotFoundException: {} в запросе {}",
                 e.getMessage(), request.getDescription(false));

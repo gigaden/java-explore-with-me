@@ -34,13 +34,13 @@ public class EventMapper {
 
         return EventResponseDto.builder()
                 .annotation(event.getAnnotation())
-                .category(event.getCategory())
+                .category(CategoryMapper.mapToCategoryDto(event.getCategory()))
                 .confirmedRequests(5) // Добавить расчёт
                 .createdOn(event.getCreatedOn())
                 .description(event.getDescription())
                 .eventDate(event.getEventDate())
                 .id(event.getId())
-                .initiator(event.getInitiator())
+                .initiator(UserMapper.mapToResponseUserDto(event.getInitiator()))
                 .location(Location.builder()
                         .lon(event.getLocationLon())
                         .lat(event.getLocationLat())

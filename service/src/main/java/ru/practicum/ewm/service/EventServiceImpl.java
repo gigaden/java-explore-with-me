@@ -6,8 +6,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.ewm.dto.EventRequestDto;
 import ru.practicum.ewm.entity.Event;
+import ru.practicum.ewm.entity.User;
+import ru.practicum.ewm.exception.EventNotFoundException;
 import ru.practicum.ewm.mapper.EventMapper;
 import ru.practicum.ewm.repository.EventRepository;
+
+import java.util.Collection;
+import java.util.List;
 
 @Service("eventServiceImpl")
 @Slf4j
@@ -27,6 +32,17 @@ public class EventServiceImpl implements EventService {
         this.categoryService = categoryService;
     }
 
+
+    @Override
+    public Collection<Event> getAllUsersEvents(long userId, int from, int size) {
+        log.info("Пытаюсь получить все события пользователя {}", userId);
+        userService.checkUserIsExist(userId);
+        Collection<Event> events = eventRepository.findUserEventsBetweenFromAndSize(from, size, userId);
+        log.info("Получены все события пользователя {}", userId);
+
+        return events;
+    }
+
     @Override
     @Transactional
     public Event createEvent(long userId, EventRequestDto eventDto) {
@@ -34,11 +50,26 @@ public class EventServiceImpl implements EventService {
         Event event = eventRepository
                 .save(EventMapper.mapRequestDtoToEvent(eventDto,
                         userService.getUserById(userId),
-                        categoryService.getById(userId)));
+                        categoryService.getById(eventDto.getCategory())));
 
 
         log.info("Новое событие создано {}", event);
 
         return event;
     }
+
+    @Override
+    public Event getUserEventsById(long userId, long eventId) {
+        log.info("Пытаюсь получить событию с id = {} пользователя с id = {}", eventId, userId);
+        userService.checkUserIsExist(userId);
+        Event event = eventRepository.findEventByIdAndInitiatorId(eventId, userId)
+                .orElseThrow(() -> {
+                    log.warn("Событие с id = {} пользователя с id = {} не найдено", eventId, userId);
+                    return new EventNotFoundException("");
+                });
+        log.info("Событие с id = {} пользователя с id = {} получено", eventId, userId);
+        return event;
+    }
+
+
 }
