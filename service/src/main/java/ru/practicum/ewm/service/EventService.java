@@ -12,4 +12,6 @@ public interface EventService {
     Event createEvent(long userId, EventRequestDto eventDto);
 
     Event getUserEventsById(long userId, long eventId);
+
+    Event getEventById(long eventId);
 }

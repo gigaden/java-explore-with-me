@@ -40,9 +40,25 @@ public class ErrorHandler {
     }
 
     @ExceptionHandler
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public HashMap<String, String> handleRequestNotFound(final RequestNotFoundException e, WebRequest request) {
+        log.error("Ошибка 404 RequestNotFoundException: {} в запросе {}",
+                e.getMessage(), request.getDescription(false));
+        return buildErrorResponse(e.getMessage());
+    }
+
+    @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public HashMap<String, String> handleCategoryValidation(final CategoryValidationException e, WebRequest request) {
         log.error("Ошибка 400 CategoryValidationException: {} в запросе {}",
+                e.getMessage(), request.getDescription(false));
+        return buildErrorResponse(e.getMessage());
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public HashMap<String, String> handleRequestValidation(final RequestValidationException e, WebRequest request) {
+        log.error("Ошибка 409 RequestValidationException: {} в запросе {}",
                 e.getMessage(), request.getDescription(false));
         return buildErrorResponse(e.getMessage());
     }

@@ -60,7 +60,7 @@ public class EventServiceImpl implements EventService {
 
     @Override
     public Event getUserEventsById(long userId, long eventId) {
-        log.info("Пытаюсь получить событию с id = {} пользователя с id = {}", eventId, userId);
+        log.info("Пытаюсь получить событие с id = {} пользователя с id = {}", eventId, userId);
         userService.checkUserIsExist(userId);
         Event event = eventRepository.findEventByIdAndInitiatorId(eventId, userId)
                 .orElseThrow(() -> {
@@ -68,6 +68,18 @@ public class EventServiceImpl implements EventService {
                     return new EventNotFoundException("");
                 });
         log.info("Событие с id = {} пользователя с id = {} получено", eventId, userId);
+        return event;
+    }
+
+    @Override
+    public Event getEventById(long eventId) {
+        log.info("Пытаюсь получить событие с id = {}", eventId);
+        Event event = eventRepository.findById(eventId)
+                .orElseThrow(() -> {
+                    log.warn("Событие с id = {} не найдено", eventId);
+                    return new EventNotFoundException("");
+                });
+        log.info("Событие с id = {} получено", eventId);
         return event;
     }
 
