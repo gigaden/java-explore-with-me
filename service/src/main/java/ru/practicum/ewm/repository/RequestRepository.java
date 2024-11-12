@@ -1,6 +1,7 @@
 package ru.practicum.ewm.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import ru.practicum.ewm.entity.Request;
 
 import java.util.Collection;
@@ -14,8 +15,19 @@ public interface RequestRepository extends JpaRepository<Request, Long> {
     boolean existsByRequesterIdAndEventId(long userId, long eventId);
 
     // Получаем количество запросов на участие в событии по Id;
-    Collection<Request> findAllById(long eventId);
+    Collection<Request> findAllByEventId(long eventId);
 
     // Получаем запрос пользователя
     Optional<Request> findByIdAndRequesterId(long requestId, long userId);
+
+    //
+    @Query(value = """
+                        SELECT r
+                        FROM Request r
+                        JOIN r.event e
+                        WHERE e.initiator.id = :userId AND e.id = :eventId
+            """)
+    Collection<Request> getAllUserEventsRequests(long userId, long eventId);
+
+
 }
