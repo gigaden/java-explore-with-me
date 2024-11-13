@@ -107,12 +107,14 @@ public class RequestServiceImpl implements RequestService {
     @Override
     @Transactional
     public RequestsAfterChangesDto changeRequestsStatus(long userId, long eventId, RequestsToChangeDto dto) {
+        log.info("Пользователь id = {} пытается изменить статусы запросов для события id = {}", userId, eventId);
         User user = userService.getUserById(userId);
         Event event = eventService.getEventById(eventId);
 
         // Проверим, на всякий, что это событие принадлежит юзеру
         if (!event.getInitiator().equals(user)) {
-            throw new RequestValidationException("Нельзя изменять статусы заявок чужих событий");
+            log.warn("Попытка изменить статусы запросов для чужого события");
+            throw new RequestValidationException("Нельзя изменять статусы запросов чужих событий");
         }
 
         // Подготовим объект ответа и листы, которые в него запишем
@@ -129,6 +131,7 @@ public class RequestServiceImpl implements RequestService {
                     dto, resultRequests);
         }
 
+        log.info("Пользователь id = {} изменил статусы запросов для события id = {}", userId, eventId);
         return resultRequests;
 
     }
@@ -189,15 +192,16 @@ public class RequestServiceImpl implements RequestService {
             confirmedRequest.addAll(dto.getRequestIds().stream().map(this::getRequestById).toList());
             resultRequests.setConfirmedRequests(confirmedRequest.stream().map(RequestMapper::mapRequestToDto).toList());
             resultRequests.setRejectedRequests(List.of());
+            log.info("Подтверждение заявок не требуется");
             return;
         }
-
-        // Нельзя подтвердить заявку, если уже достигнут лимит по заявкам на данное событие (Ожидается код ошибки 409)
 
         // Проверяем, что у всех запросов статус PENDING
         boolean allIsPending = requests.stream()
                 .allMatch(re -> re.getStatus().equals(RequestStatus.PENDING));
+        // Нельзя подтвердить заявку, если уже достигнут лимит по заявкам на данное событие (Ожидается код ошибки 409)
         if (totalRequests + dto.getRequestIds().size() > event.getParticipantLimit() && allIsPending) {
+            log.warn("Лимит участников = {} превышен", event.getParticipantLimit());
             throw new RequestValidationException("Превышен лимит участников");
         }
 
