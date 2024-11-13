@@ -6,4 +6,6 @@ import ru.practicum.ewm.entity.EventCompilation;
 
 public interface EventCompilationRepository extends JpaRepository<EventCompilation, Long> {
 
+    void deleteAllByCompilationId(long compId);
+
 }

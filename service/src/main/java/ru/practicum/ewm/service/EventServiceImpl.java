@@ -83,5 +83,14 @@ public class EventServiceImpl implements EventService {
         return event;
     }
 
+    @Override
+    public List<Event> getAllEventsByCompilationId(long compId) {
+        log.info("Пытаюсь получить все события из подборки с id = {}", compId);
+        List<Event> events = eventRepository.getAllEventsByCompilationId(compId);
+        log.info("Получены все события из подборки с id = {}", compId);
+
+        return events;
+    }
+
 
 }

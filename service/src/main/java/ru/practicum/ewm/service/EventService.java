@@ -14,4 +14,6 @@ public interface EventService {
     Event getUserEventsById(long userId, long eventId);
 
     Event getEventById(long eventId);
+
+    Collection<Event> getAllEventsByCompilationId(long compId);
 }

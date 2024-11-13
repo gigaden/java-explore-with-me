@@ -5,4 +5,5 @@ import ru.practicum.ewm.entity.Compilation;
 
 public interface CompilationRepository extends JpaRepository<Compilation, Long> {
 
+    void deleteCompilationById(long compId);
 }

@@ -48,6 +48,14 @@ public class ErrorHandler {
     }
 
     @ExceptionHandler
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public HashMap<String, String> handleCompilationNotFound(final CompilationNotFoundException e, WebRequest request) {
+        log.error("Ошибка 404 CompilationNotFoundException: {} в запросе {}",
+                e.getMessage(), request.getDescription(false));
+        return buildErrorResponse(e.getMessage());
+    }
+
+    @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public HashMap<String, String> handleCategoryValidation(final CategoryValidationException e, WebRequest request) {
         log.error("Ошибка 400 CategoryValidationException: {} в запросе {}",
