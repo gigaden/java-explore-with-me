@@ -16,6 +16,7 @@ import ru.practicum.ewm.repository.CompilationRepository;
 import ru.practicum.ewm.repository.EventCompilationRepository;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 
 @Service("compilationServiceImpl")
@@ -113,7 +114,36 @@ public class CompilationServiceImpl implements CompilationService {
 
         return CompilationMapper.mapToCompilationResponseDto(compilation, events);
 
+    }
 
+    @Override
+    @Transactional(readOnly = true)
+    public Collection<CompilationResponseDto> getCompilations(Boolean pinned, int from, int size) {
+        log.info("Пытаюсь получить подборки в дипазоне from = {} size = {} pinned = {}", from, size, pinned);
+        Collection<CompilationResponseDto> response = new HashSet<>();
+
+        // Получаем подборки, исходя из фильтров
+        List<Compilation> compilations = compilationRepository.findCompilationsBetweenFromAndSize(pinned, from, size);
+
+        // Создаём подборки с событиями
+        for (Compilation compilation: compilations) {
+            Collection<Event> events = eventService.getAllEventsByCompilationId(compilation.getId());
+            response.add(CompilationMapper.mapToCompilationResponseDto(compilation, events));
+        }
+        log.info("Подборки в дипазоне from = {} size = {} pinned = {} получены", from, size, pinned);
+
+        return response;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public CompilationResponseDto getCompilationEventsById(long compId) {
+        log.info("Пытаюсь получить подборку событий с id = {}", compId);
+        Compilation compilation = getCompilationById(compId);
+        Collection<Event> events = eventService.getAllEventsByCompilationId(compId);
+        log.info("Подборка событий с id = {} получена", compId);
+
+        return CompilationMapper.mapToCompilationResponseDto(compilation, events);
     }
 
 

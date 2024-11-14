@@ -1,9 +1,12 @@
 package ru.practicum.ewm.service;
 
+import org.springframework.web.bind.annotation.RequestParam;
 import ru.practicum.ewm.dto.EventRequestDto;
 import ru.practicum.ewm.entity.Event;
 
+import java.time.LocalDateTime;
 import java.util.Collection;
+import java.util.List;
 
 public interface EventService {
 
@@ -16,4 +19,12 @@ public interface EventService {
     Event getEventById(long eventId);
 
     Collection<Event> getAllEventsByCompilationId(long compId);
+
+    Collection<Event> getAllEventsByParam(List<Integer> users,
+                                          List<String> states,
+                                          List<Integer> categories,
+                                          LocalDateTime rangeStart,
+                                          LocalDateTime rangeEnd,
+                                          int from,
+                                          int size);
 }

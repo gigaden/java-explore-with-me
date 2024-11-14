@@ -49,7 +49,7 @@ public class EventMapper {
                 .participantLimit(event.getParticipantLimit())
                 .publishedOn(LocalDateTime.now()) // Добавить
                 .requestModeration(event.isRequestModeration())
-                .state("PUBLISHED") // Добавить, возможно enum
+                .state(event.getState())
                 .title(event.getTitle())
                 .views(999) // Добавить расчёт
                 .build();

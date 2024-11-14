@@ -11,6 +11,7 @@ import ru.practicum.ewm.exception.EventNotFoundException;
 import ru.practicum.ewm.mapper.EventMapper;
 import ru.practicum.ewm.repository.EventRepository;
 
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
 
@@ -88,6 +89,15 @@ public class EventServiceImpl implements EventService {
         log.info("Пытаюсь получить все события из подборки с id = {}", compId);
         List<Event> events = eventRepository.getAllEventsByCompilationId(compId);
         log.info("Получены все события из подборки с id = {}", compId);
+
+        return events;
+    }
+
+    @Override
+    public Collection<Event> getAllEventsByParam(List<Integer> users, List<String> states, List<Integer> categories, LocalDateTime rangeStart, LocalDateTime rangeEnd, int from, int size) {
+        log.info("Пытаюсь получить коллекцию событий с параметрами");
+        Collection<Event> events = eventRepository.getAllEventsByParam(users, states, categories, rangeStart, rangeEnd, from, size);
+        log.info("Коллекция событий с параметрами получена");
 
         return events;
     }

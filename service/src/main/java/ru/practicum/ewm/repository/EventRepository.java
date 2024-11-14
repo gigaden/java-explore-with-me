@@ -4,6 +4,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import ru.practicum.ewm.entity.Event;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -27,4 +28,17 @@ public interface EventRepository extends JpaRepository<Event, Long> {
                                    WHERE compilation_id = :compId)
             """, nativeQuery = true)
     List<Event> getAllEventsByCompilationId(long compId);
+
+    @Query(value = """
+                    SELECT
+                        *
+                    FROM events
+                    WHERE initiator IN :users
+                    AND state IN :states
+                    AND category IN :categories
+                    AND event_date BETWEEN :rangeStart AND :rangeEnd
+                    LIMIT :size OFFSET :from
+            """, nativeQuery = true)
+    List<Event> getAllEventsByParam(List<Integer> users, List<String> states, List<Integer> categories,
+                                    LocalDateTime rangeStart, LocalDateTime rangeEnd, int from, int size);
 }

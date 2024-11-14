@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import ru.practicum.ewm.entity.Category;
+import ru.practicum.ewm.entity.EventState;
 import ru.practicum.ewm.entity.Location;
 import ru.practicum.ewm.entity.User;
 
@@ -42,7 +43,7 @@ public class EventResponseDto {
 
     private boolean requestModeration;
 
-    private String state;
+    private EventState state;
 
     private String title;
 
