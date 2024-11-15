@@ -1,6 +1,10 @@
 package ru.practicum.ewm.service;
 
+import jakarta.validation.Valid;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
+import ru.practicum.ewm.dto.EventAdminRequestDto;
 import ru.practicum.ewm.dto.EventRequestDto;
 import ru.practicum.ewm.entity.Event;
 import ru.practicum.ewm.entity.EventState;
@@ -28,4 +32,6 @@ public interface EventService {
                                           LocalDateTime rangeEnd,
                                           int from,
                                           int size);
+
+    Event updateEventById(long eventId, EventAdminRequestDto dto);
 }

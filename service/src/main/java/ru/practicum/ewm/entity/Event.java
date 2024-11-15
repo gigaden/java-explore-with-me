@@ -17,11 +17,13 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.DynamicInsert;
 
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "events")
+@DynamicInsert
 @Data
 @Builder
 @AllArgsConstructor
@@ -60,6 +62,9 @@ public class Event {
     @NotNull
     private LocalDateTime createdOn = LocalDateTime.now();
 
+    @Column(name = "published_on")
+    private LocalDateTime publishedOn;
+
     @Column(name = "location_lat")
     @NotBlank
     @NotNull
@@ -94,6 +99,6 @@ public class Event {
     @NotBlank
     @NotNull
     @Enumerated(EnumType.STRING)
-    private EventState state;
+    private EventState state = EventState.PENDING;
 
 }

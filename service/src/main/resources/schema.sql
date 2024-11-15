@@ -22,13 +22,14 @@ CREATE TABLE IF NOT EXISTS events
     description        VARCHAR(512)                NOT NULL,
     event_date         TIMESTAMP WITHOUT TIME ZONE NOT NULL,
     created_on         TIMESTAMP WITHOUT TIME ZONE NOT NULL,
+    published_on       TIMESTAMP WITHOUT TIME ZONE,
     location_lat       VARCHAR(128)                NOT NULL,
     location_lon       VARCHAR(128)                NOT NULL,
     paid               BOOLEAN                     NOT NULL,
     participant_limit  INTEGER                     NOT NULL,
     request_moderation BOOLEAN                     NOT NULL,
     title              VARCHAR(256)                NOT NULL,
-    state              VARCHAR(50) DEFAULT 'PENDING'
+    state              VARCHAR(50) DEFAULT 'PENDING' NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS requests

@@ -4,6 +4,7 @@ import ru.practicum.ewm.dto.EventRequestDto;
 import ru.practicum.ewm.dto.EventResponseDto;
 import ru.practicum.ewm.entity.Category;
 import ru.practicum.ewm.entity.Event;
+import ru.practicum.ewm.entity.EventState;
 import ru.practicum.ewm.entity.Location;
 import ru.practicum.ewm.entity.User;
 
@@ -25,6 +26,7 @@ public class EventMapper {
                 .paid(dto.isPaid())
                 .participantLimit(dto.getParticipantLimit())
                 .requestModeration(dto.isRequestModeration())
+                .state(EventState.PENDING)
                 .title(dto.getTitle())
                 .createdOn(LocalDateTime.now())
                 .build();
@@ -47,7 +49,7 @@ public class EventMapper {
                         .build())
                 .paid(event.isPaid())
                 .participantLimit(event.getParticipantLimit())
-                .publishedOn(LocalDateTime.now()) // Добавить
+                .publishedOn(event.getPublishedOn())
                 .requestModeration(event.isRequestModeration())
                 .state(event.getState())
                 .title(event.getTitle())

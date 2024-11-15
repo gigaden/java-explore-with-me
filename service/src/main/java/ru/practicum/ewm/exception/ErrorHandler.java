@@ -71,6 +71,14 @@ public class ErrorHandler {
         return buildErrorResponse(e.getMessage());
     }
 
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public HashMap<String, String> handleEventValidation(final EventValidationException e, WebRequest request) {
+        log.error("Ошибка 409 EventValidationException: {} в запросе {}",
+                e.getMessage(), request.getDescription(false));
+        return buildErrorResponse(e.getMessage());
+    }
+
     public HashMap<String, String> buildErrorResponse(String message) {
         HashMap<String, String> response = new HashMap<>();
         response.put("error", message);

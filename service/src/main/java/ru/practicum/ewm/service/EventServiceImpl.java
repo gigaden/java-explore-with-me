@@ -8,15 +8,18 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.practicum.ewm.dto.EventAdminRequestDto;
 import ru.practicum.ewm.dto.EventRequestDto;
 import ru.practicum.ewm.entity.Event;
 import ru.practicum.ewm.entity.EventState;
 import ru.practicum.ewm.entity.QEvent;
 import ru.practicum.ewm.entity.User;
 import ru.practicum.ewm.exception.EventNotFoundException;
+import ru.practicum.ewm.exception.EventValidationException;
 import ru.practicum.ewm.mapper.EventMapper;
 import ru.practicum.ewm.repository.EventRepository;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
@@ -29,6 +32,10 @@ public class EventServiceImpl implements EventService {
     EventRepository eventRepository;
     UserService userService;
     CategoryService categoryService;
+
+    // Ограничение для публикации события
+    // Дата начала изменяемого события должна быть не ранее чем за час от даты публикации.
+    int secondsBeforePublish = 3600;
 
     @PersistenceContext
     private EntityManager entityManager;
@@ -136,6 +143,76 @@ public class EventServiceImpl implements EventService {
         log.info("Коллекция событий с параметрами получена");
 
         return events;
+    }
+
+    @Override
+    @Transactional
+    public Event updateEventById(long eventId, EventAdminRequestDto dto) {
+        log.info("Пытаюсь обновить событие с id = {}", eventId);
+        Event event = getEventById(eventId);
+
+        checkEventBeforeUpdate(event, dto);
+        updateEventsFieldFromDto(event, dto);
+
+        eventRepository.save(event);
+        log.info("Обновлено событие с id = {}", eventId);
+
+        return event;
+    }
+
+    // Проверяем событие и дто перед обновлением
+    public void checkEventBeforeUpdate(Event event, EventAdminRequestDto dto) {
+        if (Duration.between(LocalDateTime.now(), event.getEventDate()).toSeconds() <= secondsBeforePublish) {
+            log.warn("дата начала изменяемого события должна быть не ранее чем за час от даты публикации");
+            throw new EventValidationException("Событие не удовлетворяет правилам редактирования.");
+        }
+        if (dto.getStateAction() == EventState.REJECT_EVENT && event.getState() == EventState.PUBLISHED) {
+            log.warn("Событие можно отклонить, только если оно еще не опубликовано");
+            throw new EventValidationException("Событие не удовлетворяет правилам редактирования.");
+        }
+        if (!event.getState().equals(EventState.PENDING)) {
+            log.warn("Событие можно публиковать, только если оно в состоянии ожидания публикации");
+            throw new EventValidationException("Событие не удовлетворяет правилам редактирования.");
+        }
+    }
+
+    private void updateEventsFieldFromDto(Event event, EventAdminRequestDto dto) {
+        if (dto.getAnnotation() != null && !dto.getAnnotation().isBlank()) {
+            event.setAnnotation(dto.getAnnotation());
+        }
+        if (dto.getCategory() != null) {
+            event.setCategory(categoryService.getById(dto.getCategory()));
+        }
+        if (dto.getDescription() != null && !dto.getDescription().isBlank()) {
+            event.setDescription(dto.getDescription());
+        }
+        if (dto.getEventDate() != null) {
+            event.setEventDate(dto.getEventDate());
+        }
+        if (dto.getLocation() != null) {
+            event.setLocationLat(dto.getLocation().getLat());
+            event.setLocationLon(dto.getLocation().getLon());
+        }
+        if (dto.getPaid() != null) {
+            event.setPaid(dto.getPaid());
+        }
+        if (dto.getParticipantLimit() != null) {
+            event.setParticipantLimit(dto.getParticipantLimit());
+        }
+        if (dto.getRequestModeration() != null) {
+            event.setRequestModeration(dto.getRequestModeration());
+        }
+        if (dto.getStateAction() != null) {
+            if (dto.getStateAction().equals(EventState.PUBLISH_EVENT)) {
+                event.setState(EventState.PUBLISHED);
+                event.setPublishedOn(LocalDateTime.now());
+            } else if (dto.getStateAction().equals(EventState.REJECT_EVENT)) {
+                event.setState(EventState.CANCELED);
+            }
+        }
+        if (dto.getTitle() != null && !dto.getTitle().isBlank()) {
+            event.setTitle(dto.getTitle());
+        }
     }
 
 

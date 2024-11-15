@@ -23,6 +23,7 @@ import ru.practicum.ewm.mapper.RequestMapper;
 import ru.practicum.ewm.service.EventService;
 import ru.practicum.ewm.service.RequestService;
 
+
 import java.util.Collection;
 
 @RestController
@@ -30,10 +31,10 @@ import java.util.Collection;
 public class UserEventController {
 
     @Qualifier("eventServiceImpl")
-    EventService eventService;
+    private final EventService eventService;
 
     @Qualifier("requestServiceImpl")
-    RequestService requestService;
+    private final RequestService requestService;
 
     @Autowired
     public UserEventController(EventService eventService,
@@ -50,6 +51,8 @@ public class UserEventController {
                                                                    @RequestParam(defaultValue = "10") int size) {
         Collection<EventResponseDto> events = eventService.getAllUsersEvents(userId, from, size).stream()
                 .map(EventMapper::mapEventToResponseDto).toList();
+
+
 
         return new ResponseEntity<>(events, HttpStatus.OK);
     }
