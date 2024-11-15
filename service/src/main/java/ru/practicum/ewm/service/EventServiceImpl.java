@@ -1,11 +1,17 @@
 package ru.practicum.ewm.service;
 
+import com.querydsl.core.BooleanBuilder;
+import com.querydsl.jpa.impl.JPAQuery;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.ewm.dto.EventRequestDto;
 import ru.practicum.ewm.entity.Event;
+import ru.practicum.ewm.entity.EventState;
+import ru.practicum.ewm.entity.QEvent;
 import ru.practicum.ewm.entity.User;
 import ru.practicum.ewm.exception.EventNotFoundException;
 import ru.practicum.ewm.mapper.EventMapper;
@@ -23,6 +29,9 @@ public class EventServiceImpl implements EventService {
     EventRepository eventRepository;
     UserService userService;
     CategoryService categoryService;
+
+    @PersistenceContext
+    private EntityManager entityManager;
 
     @Autowired
     public EventServiceImpl(EventRepository eventRepository,
@@ -94,9 +103,36 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public Collection<Event> getAllEventsByParam(List<Integer> users, List<String> states, List<Integer> categories, LocalDateTime rangeStart, LocalDateTime rangeEnd, int from, int size) {
+    public Collection<Event> getAllEventsByParam(List<Long> users, List<EventState> states, List<Long> categories, LocalDateTime rangeStart, LocalDateTime rangeEnd, int from, int size) {
         log.info("Пытаюсь получить коллекцию событий с параметрами");
-        Collection<Event> events = eventRepository.getAllEventsByParam(users, states, categories, rangeStart, rangeEnd, from, size);
+        //Collection<Event> events = eventRepository.getAllEventsByParam(users, states, categories, rangeStart, rangeEnd, from, size);
+        QEvent event = QEvent.event;
+        BooleanBuilder builder = new BooleanBuilder();
+
+        if (users != null && !users.isEmpty()) {
+            builder.and(event.initiator.id.in(users));
+        }
+
+        if (states != null && !states.isEmpty()) {
+            builder.and(event.state.in(states));
+        }
+
+        if (categories != null && !categories.isEmpty()) {
+            builder.and(event.category.id.in(categories));
+        }
+
+        if (rangeStart != null && rangeEnd != null) {
+            builder.and(event.eventDate.between(rangeStart, rangeEnd));
+        }
+
+        JPAQuery<Event> query = new JPAQuery<>(entityManager);
+        Collection<Event> events = query.select(event)
+                .from(event)
+                .where(builder)
+                .offset(from)
+                .limit(size)
+                .fetch();
+
         log.info("Коллекция событий с параметрами получена");
 
         return events;

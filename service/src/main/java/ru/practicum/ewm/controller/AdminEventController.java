@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import ru.practicum.ewm.dto.EventResponseDto;
+import ru.practicum.ewm.entity.EventState;
 import ru.practicum.ewm.mapper.EventMapper;
 import ru.practicum.ewm.service.EventService;
 
@@ -32,18 +33,19 @@ public class AdminEventController {
     }
 
     @GetMapping
-    public ResponseEntity<Collection<EventResponseDto>> getAllEventsByParam(@RequestParam List<Integer> users,
-                                                                            @RequestParam List<String> states,
-                                                                            @RequestParam List<Integer> categories,
-                                                                            @RequestParam String rangeStart,
-                                                                            @RequestParam String rangeEnd,
+    public ResponseEntity<Collection<EventResponseDto>> getAllEventsByParam(@RequestParam(required = false) List<Long> users,
+                                                                            @RequestParam(required = false)  List<EventState> states,
+                                                                            @RequestParam(required = false) List<Long> categories,
+                                                                            @RequestParam(required = false) String rangeStart,
+                                                                            @RequestParam(required = false) String rangeEnd,
                                                                             @RequestParam(defaultValue = "0") int from,
                                                                             @RequestParam(defaultValue = "10") int size) {
 
         // Декодируем строки и переводим их в даты
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-        LocalDateTime decodedStart = LocalDateTime.parse(URLDecoder.decode(rangeStart, StandardCharsets.UTF_8), formatter);
-        LocalDateTime decodedEnd = LocalDateTime.parse(URLDecoder.decode(rangeEnd, StandardCharsets.UTF_8), formatter);
+        // Сделал так, что даты не обязательны, поэтому проверяем на null, чтобы в .decode не вылетела ошибка
+        LocalDateTime decodedStart = rangeStart != null ? LocalDateTime.parse(URLDecoder.decode(rangeStart, StandardCharsets.UTF_8), formatter) : null;
+        LocalDateTime decodedEnd = rangeEnd != null ? LocalDateTime.parse(URLDecoder.decode(rangeEnd, StandardCharsets.UTF_8), formatter) : null;
 
         Collection<EventResponseDto> events = eventService.getAllEventsByParam(users, states, categories,
                         decodedStart, decodedEnd, from, size).stream()
