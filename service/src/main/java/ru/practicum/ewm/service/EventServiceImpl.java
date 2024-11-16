@@ -1,23 +1,30 @@
 package ru.practicum.ewm.service;
 
 import com.querydsl.core.BooleanBuilder;
+import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQuery;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.practicum.dto.StatisticDtoCreate;
 import ru.practicum.ewm.dto.EventAdminRequestDto;
+import ru.practicum.ewm.dto.EventParamRequest;
 import ru.practicum.ewm.dto.EventRequestDto;
 import ru.practicum.ewm.entity.Event;
 import ru.practicum.ewm.entity.EventState;
 import ru.practicum.ewm.entity.QEvent;
-import ru.practicum.ewm.entity.User;
+import ru.practicum.ewm.entity.QRequest;
+import ru.practicum.ewm.entity.RequestStatus;
 import ru.practicum.ewm.exception.EventNotFoundException;
 import ru.practicum.ewm.exception.EventValidationException;
 import ru.practicum.ewm.mapper.EventMapper;
 import ru.practicum.ewm.repository.EventRepository;
+import ru.practicum.statistics.StatisticClient;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -29,9 +36,11 @@ import java.util.List;
 @Transactional(readOnly = true)
 public class EventServiceImpl implements EventService {
 
-    EventRepository eventRepository;
-    UserService userService;
-    CategoryService categoryService;
+    private final EventRepository eventRepository;
+    private final UserService userService;
+    private final CategoryService categoryService;
+    private final StatisticClient statisticClient;
+    private final String appName;
 
     // Ограничение для публикации события
     // Дата начала изменяемого события должна быть не ранее чем за час от даты публикации.
@@ -43,10 +52,14 @@ public class EventServiceImpl implements EventService {
     @Autowired
     public EventServiceImpl(EventRepository eventRepository,
                             UserService userService,
-                            CategoryService categoryService) {
+                            CategoryService categoryService,
+                            StatisticClient statisticClient,
+                            @Value("${application.name}") String appName) {
         this.eventRepository = eventRepository;
         this.userService = userService;
         this.categoryService = categoryService;
+        this.statisticClient = statisticClient;
+        this.appName = appName;
     }
 
 
@@ -159,6 +172,107 @@ public class EventServiceImpl implements EventService {
 
         return event;
     }
+
+    // Получаем все опубликованные события, исходя из параметров
+    @Override
+    public Collection<Event> getAllEventsPublic(EventParamRequest param, HttpServletRequest statRequest) {
+        log.info("Пытаюсь получить публичную коллекцию событий с параметрами {}", param);
+        QEvent event = QEvent.event;
+        QRequest request = QRequest.request;
+        BooleanBuilder builder = new BooleanBuilder();
+
+        builder.and(event.state.eq(EventState.PUBLISHED));
+
+        if (param.getText() != null && !param.getText().isEmpty()) {
+            builder.and(event.description.lower().contains(param.getText().toLowerCase())
+                    .or(event.annotation.lower().contains(param.getText().toLowerCase())));
+        }
+        if (param.getCategories() != null && !param.getCategories().isEmpty()) {
+            builder.and(event.category.id.in(param.getCategories()));
+        }
+        if (param.getPaid() != null) {
+            builder.and(event.paid.eq(param.getPaid()));
+        }
+        if (param.getRangeStart() != null && param.getRangeEnd() != null) {
+            builder.and(event.eventDate.between(param.getRangeStart(), param.getRangeEnd()));
+        } else if (param.getRangeStart() == null || param.getRangeEnd() == null) {
+            builder.and(event.eventDate.after(LocalDateTime.now()));
+        }
+        if (param.getOnlyAvailable() != null && param.getOnlyAvailable()) {
+            builder.and(
+                    event.participantLimit.gt(
+                            JPAExpressions
+                                    .select(request.count())
+                                    .from(request)
+                                    .where(
+                                            request.event.id.eq(event.id)
+                                                    .and(request.status.eq(RequestStatus.CONFIRMED))
+                                    )
+                    )
+            );
+        }
+
+
+        JPAQuery<Event> query = new JPAQuery<>(entityManager);
+        query.from(event);
+        query.where(builder);
+        if (param.getSort() != null) {
+            switch (param.getSort()) {
+                case "EVENT_DATE":
+                    query.orderBy(event.eventDate.asc());
+                    break;
+                case "VIEWS":
+                    query.orderBy(event.views.desc());
+                    break; // Добавить поле с кол-вом просмотров
+            }
+        }
+
+        query.offset(param.getFrom());
+        query.limit(param.getSize());
+
+        Collection<Event> events = query.fetch();
+
+        log.info("Публичная коллекция событий с параметрами получена");
+        sendStatisticToTheServer(statRequest);
+
+        return events;
+    }
+
+
+    // Получаем опубликованное событие по id
+    @Override
+    @Transactional
+    public Event getEventByIdPublic(long id, HttpServletRequest request) {
+        log.info("Пытаюсь получить опубликованное событие с id = {}", id);
+        Event event = eventRepository.findEventByIdAndState(id, EventState.PUBLISHED)
+                .orElseThrow(() -> {
+                    log.warn("Событие c id = {} не найдено или недоступно", id);
+                    return new EventNotFoundException("Событие не найдено или недоступно");
+                });
+        log.info("Опубликованное событие с id = {} получено", id);
+
+        // Увеличиваем количество просмотров и добавляем это в БД
+        event.setViews(event.getViews() + 1);
+        eventRepository.save(event);
+
+        sendStatisticToTheServer(request);
+
+        return event;
+    }
+
+    // Отправляем статистику на сервер
+    private void sendStatisticToTheServer(HttpServletRequest request) {
+        StatisticDtoCreate statisticDtoCreate = StatisticDtoCreate.builder()
+                .ip(request.getRemoteAddr())
+                .uri(request.getRequestURI())
+                .timestamp(LocalDateTime.now())
+                .app(appName)
+                .build();
+        log.info("Пытаюсь отправить статистику на сервер {}", statisticDtoCreate);
+        statisticClient.createStatistic(statisticDtoCreate);
+        log.info("Статистика отправлена");
+    }
+
 
     // Проверяем событие и дто перед обновлением
     public void checkEventBeforeUpdate(Event event, EventAdminRequestDto dto) {

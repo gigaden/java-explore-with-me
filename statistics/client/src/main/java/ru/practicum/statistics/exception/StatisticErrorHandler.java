@@ -11,7 +11,7 @@ import java.util.HashMap;
 
 @RestControllerAdvice
 @Slf4j
-public class ErrorHandler {
+public class StatisticErrorHandler {
 
 
     @ExceptionHandler

@@ -14,6 +14,7 @@ import ru.practicum.ewm.exception.CategoryNotFoundException;
 import ru.practicum.ewm.exception.RequestNotFoundException;
 import ru.practicum.ewm.exception.RequestValidationException;
 import ru.practicum.ewm.mapper.RequestMapper;
+import ru.practicum.ewm.repository.EventRepository;
 import ru.practicum.ewm.repository.RequestRepository;
 
 import java.util.ArrayList;
@@ -25,16 +26,18 @@ import java.util.List;
 @Slf4j
 public class RequestServiceImpl implements RequestService {
 
-    RequestRepository requestRepository;
-    UserService userService;
-    EventService eventService;
+    private final RequestRepository requestRepository;
+    private final UserService userService;
+    private final EventService eventService;
+    private final EventRepository eventRepository;
 
     public RequestServiceImpl(RequestRepository requestRepository,
                               UserService userService,
-                              EventService eventService) {
+                              EventService eventService, EventRepository eventRepository) {
         this.requestRepository = requestRepository;
         this.userService = userService;
         this.eventService = eventService;
+        this.eventRepository = eventRepository;
     }
 
     @Override
@@ -131,10 +134,15 @@ public class RequestServiceImpl implements RequestService {
                     dto, resultRequests);
         }
 
+        // Увеличиваем кол-во подтверждённых запросов у события
+        event.setConfirmedRequests(event.getConfirmedRequests() + confirmedRequest.size());
+        eventRepository.save(event);
+
         log.info("Пользователь id = {} изменил статусы запросов для события id = {}", userId, eventId);
         return resultRequests;
 
     }
+
 
     public Request getRequestById(long requestId) {
         log.info("Пытаюсь получить  запрос с id = {}", requestId);

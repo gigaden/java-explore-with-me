@@ -3,6 +3,7 @@ package ru.practicum.ewm.service;
 import ru.practicum.ewm.dto.RequestsAfterChangesDto;
 import ru.practicum.ewm.dto.RequestsToChangeDto;
 import ru.practicum.ewm.entity.Request;
+import ru.practicum.ewm.entity.RequestStatus;
 
 import java.util.Collection;
 

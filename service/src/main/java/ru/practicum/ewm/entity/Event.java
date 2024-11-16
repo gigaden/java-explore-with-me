@@ -101,4 +101,10 @@ public class Event {
     @Enumerated(EnumType.STRING)
     private EventState state = EventState.PENDING;
 
+    @Column(name = "views")
+    private Long views;
+
+    @Column(name = "confirmed_requests")
+    private Integer confirmedRequests = 0;
+
 }

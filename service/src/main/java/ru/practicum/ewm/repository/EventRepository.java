@@ -4,6 +4,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 import ru.practicum.ewm.entity.Event;
+import ru.practicum.ewm.entity.EventState;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -42,4 +43,6 @@ public interface EventRepository extends JpaRepository<Event, Long>, QuerydslPre
             """, nativeQuery = true)
     List<Event> getAllEventsByParam(List<Integer> users, List<String> states, List<Integer> categories,
                                     LocalDateTime rangeStart, LocalDateTime rangeEnd, int from, int size);
+
+    Optional<Event> findEventByIdAndState(long id, EventState state);
 }

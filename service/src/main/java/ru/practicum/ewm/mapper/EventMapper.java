@@ -37,7 +37,7 @@ public class EventMapper {
         return EventResponseDto.builder()
                 .annotation(event.getAnnotation())
                 .category(CategoryMapper.mapToCategoryDto(event.getCategory()))
-                .confirmedRequests(5) // Добавить расчёт
+                .confirmedRequests(event.getConfirmedRequests()) // Добавить расчёт
                 .createdOn(event.getCreatedOn())
                 .description(event.getDescription())
                 .eventDate(event.getEventDate())
@@ -53,7 +53,7 @@ public class EventMapper {
                 .requestModeration(event.isRequestModeration())
                 .state(event.getState())
                 .title(event.getTitle())
-                .views(999) // Добавить расчёт
+                .views(event.getViews())
                 .build();
     }
 }

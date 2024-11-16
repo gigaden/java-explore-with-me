@@ -29,3 +29,6 @@ logging:
     org.springframework.orm.jpa: INFO
     org.springframework.transaction: INFO
     org.springframework.web: INFO
+
+application:
+  name: main
