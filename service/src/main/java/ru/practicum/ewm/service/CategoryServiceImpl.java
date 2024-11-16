@@ -1,14 +1,17 @@
 package ru.practicum.ewm.service;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.practicum.ewm.dto.CategoryCreateDto;
 import ru.practicum.ewm.dto.CategoryRequestDto;
 import ru.practicum.ewm.entity.Category;
 import ru.practicum.ewm.exception.CategoryNotFoundException;
 import ru.practicum.ewm.exception.CategoryValidationException;
 import ru.practicum.ewm.mapper.CategoryMapper;
 import ru.practicum.ewm.repository.CategoryRepository;
+import ru.practicum.ewm.repository.EventRepository;
 
 import java.util.Collection;
 import java.util.List;
@@ -18,15 +21,19 @@ import java.util.List;
 @Transactional(readOnly = true)
 public class CategoryServiceImpl implements CategoryService {
 
-    CategoryRepository categoryRepository;
+    private final CategoryRepository categoryRepository;
+    private final EventRepository eventRepository;
 
-    public CategoryServiceImpl(CategoryRepository categoryRepository) {
+    @Autowired
+    public CategoryServiceImpl(CategoryRepository categoryRepository,
+                               EventRepository eventRepository) {
         this.categoryRepository = categoryRepository;
+        this.eventRepository = eventRepository;
     }
 
     @Override
     @Transactional
-    public Category createCategory(CategoryRequestDto dto) {
+    public Category createCategory(CategoryCreateDto dto) {
         log.info("Пытаюсь добавить новую категорию {}", dto);
         checkCategoryName(dto.getName());
         Category newCategory = categoryRepository.save(CategoryMapper.mapDtoToCategory(dto));
@@ -57,6 +64,7 @@ public class CategoryServiceImpl implements CategoryService {
     public void deleteCategory(long catId) {
         log.info("Пытаюсь удалить категорию с id = {}", catId);
         checkCategoryIsExist(catId);
+        checkCategoryHasEvents(catId);
         categoryRepository.deleteById(catId);
         log.info("Категория с id = {} удалена", catId);
     }
@@ -65,7 +73,7 @@ public class CategoryServiceImpl implements CategoryService {
     public Collection<Category> getAll(int from, int size) {
         log.info("Пытаюсь получить категории в диапазаоне from = {} size = {}", from, size);
         Collection<Category> categories = categoryRepository.findCategoriesBetweenFromAndSize(from, size);
-        log.info("Категории в диапазаоне from = {} size = {} получены", from, size);
+        log.info("Категории в диапазоне from = {} size = {} получены", from, size);
 
         return categories;
     }
@@ -100,6 +108,15 @@ public class CategoryServiceImpl implements CategoryService {
         if (categoryRepository.findById(catId).isEmpty()) {
             log.warn("Категория с id = {} не существует", catId);
             throw new CategoryNotFoundException(String.format("Категории с id = %s не существует", catId));
+        }
+    }
+
+    // Проверяем, есть ли связанные с категорией события
+    private void checkCategoryHasEvents(long catId) {
+        log.info("Проверяю связаны ли события с категорией с id = {}", catId);
+        if (eventRepository.getAllByCategoryId(catId).isEmpty()) {
+            log.warn("Категория с id = {} не пустая", catId);
+            throw new CategoryNotFoundException(String.format("Существуют события, связанные с категорией %d", catId));
         }
     }
 }

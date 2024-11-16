@@ -5,5 +5,6 @@ public enum EventState {
     PUBLISHED,
     CANCELED,
     PUBLISH_EVENT,
-    REJECT_EVENT
+    REJECT_EVENT,
+    CANCEL_REVIEW
 }

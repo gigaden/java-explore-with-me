@@ -20,7 +20,7 @@ import java.util.Collection;
 public class CompilationController {
 
     @Qualifier("compilationServiceImpl")
-    CompilationService compilationService;
+    private final CompilationService compilationService;
 
     @Autowired
     public CompilationController(CompilationService compilationService) {

@@ -20,6 +20,7 @@ import ru.practicum.ewm.entity.EventState;
 import ru.practicum.ewm.entity.QEvent;
 import ru.practicum.ewm.entity.QRequest;
 import ru.practicum.ewm.entity.RequestStatus;
+import ru.practicum.ewm.entity.User;
 import ru.practicum.ewm.exception.EventNotFoundException;
 import ru.practicum.ewm.exception.EventValidationException;
 import ru.practicum.ewm.mapper.EventMapper;
@@ -43,8 +44,10 @@ public class EventServiceImpl implements EventService {
     private final String appName;
 
     // Ограничение для публикации события
-    // Дата начала изменяемого события должна быть не ранее чем за час от даты публикации.
+    // Дата начала изменяемого события должна быть не ранее чем за час от даты публикации при изменении админом
+    // и два часа при изменении пользователем
     int secondsBeforePublish = 3600;
+    int secondsBeforeUpdateByUser = 7200;
 
     @PersistenceContext
     private EntityManager entityManager;
@@ -77,6 +80,14 @@ public class EventServiceImpl implements EventService {
     @Transactional
     public Event createEvent(long userId, EventRequestDto eventDto) {
         log.info("Пытаюсь создать новое событие {}", eventDto);
+
+        if (eventDto.getEventDate().isBefore(LocalDateTime.now().plusHours(2))) {
+            log.warn("дата и время на которые намечено событие не может быть раньше, чем через два часа от текущего момента");
+            throw new EventValidationException(String
+                    .format("Field: eventDate. Error: должно содержать дату, которая еще не наступила. Value: %s",
+                            eventDto.getEventDate()));
+        }
+
         Event event = eventRepository
                 .save(EventMapper.mapRequestDtoToEvent(eventDto,
                         userService.getUserById(userId),
@@ -84,6 +95,8 @@ public class EventServiceImpl implements EventService {
 
 
         log.info("Новое событие создано {}", event);
+        event.setConfirmedRequests(0);
+        event.setViews(0L);
 
         return event;
     }
@@ -107,7 +120,7 @@ public class EventServiceImpl implements EventService {
         Event event = eventRepository.findById(eventId)
                 .orElseThrow(() -> {
                     log.warn("Событие с id = {} не найдено", eventId);
-                    return new EventNotFoundException("");
+                    return new EventNotFoundException(String.format("Событие с id = %d не найдено", eventId));
                 });
         log.info("Событие с id = {} получено", eventId);
         return event;
@@ -125,7 +138,6 @@ public class EventServiceImpl implements EventService {
     @Override
     public Collection<Event> getAllEventsByParam(List<Long> users, List<EventState> states, List<Long> categories, LocalDateTime rangeStart, LocalDateTime rangeEnd, int from, int size) {
         log.info("Пытаюсь получить коллекцию событий с параметрами");
-        //Collection<Event> events = eventRepository.getAllEventsByParam(users, states, categories, rangeStart, rangeEnd, from, size);
         QEvent event = QEvent.event;
         BooleanBuilder builder = new BooleanBuilder();
 
@@ -169,6 +181,22 @@ public class EventServiceImpl implements EventService {
 
         eventRepository.save(event);
         log.info("Обновлено событие с id = {}", eventId);
+
+        return event;
+    }
+
+    @Override
+    @Transactional
+    public Event updateEventByCurrentUser(long userId, long eventId, EventAdminRequestDto dto) {
+        log.info("Попытка пользователя с id = {} обновить событие с id = {}", userId, eventId);
+        Event event = getEventById(eventId);
+        User user = userService.getUserById(userId);
+
+        checkUsersEventBeforeUpdate(user, event, dto);
+        updateEventsFieldFromDto(event, dto);
+
+        eventRepository.save(event);
+        log.info("Пользователь с id = {} обновил событие с id = {}", userId, eventId);
 
         return event;
     }
@@ -290,6 +318,23 @@ public class EventServiceImpl implements EventService {
         }
     }
 
+
+    // Проверяем событие, пользователя и дто перед обновлением
+    public void checkUsersEventBeforeUpdate(User user, Event event, EventAdminRequestDto dto) {
+        if (!event.getInitiator().equals(user)) {
+            log.warn("Изменить можно только своё событие");
+            throw new EventValidationException("Событие не удовлетворяет правилам редактирования.");
+        }
+        if (Duration.between(LocalDateTime.now(), event.getEventDate()).toSeconds() <= secondsBeforeUpdateByUser) {
+            log.warn("дата начала изменяемого события должна быть не ранее чем за два часа от даты публикации");
+            throw new EventValidationException("Событие не удовлетворяет правилам редактирования.");
+        }
+        if (dto.getStateAction() != EventState.CANCELED || event.getState() != EventState.PENDING) {
+            log.warn("Изменить можно только отмененные события или события в состоянии ожидания модерации ");
+            throw new EventValidationException("Событие не удовлетворяет правилам редактирования.");
+        }
+    }
+
     private void updateEventsFieldFromDto(Event event, EventAdminRequestDto dto) {
         if (dto.getAnnotation() != null && !dto.getAnnotation().isBlank()) {
             event.setAnnotation(dto.getAnnotation());
@@ -317,8 +362,8 @@ public class EventServiceImpl implements EventService {
             event.setRequestModeration(dto.getRequestModeration());
         }
         if (dto.getStateAction() != null) {
-            if (dto.getStateAction().equals(EventState.PUBLISH_EVENT)) {
-                event.setState(EventState.PUBLISHED);
+            if (dto.getStateAction().equals(EventState.CANCEL_REVIEW)) {
+                event.setState(EventState.CANCELED);
                 event.setPublishedOn(LocalDateTime.now());
             } else if (dto.getStateAction().equals(EventState.REJECT_EVENT)) {
                 event.setState(EventState.CANCELED);

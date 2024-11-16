@@ -7,6 +7,7 @@ import ru.practicum.ewm.dto.RequestCreateDto;
 import ru.practicum.ewm.dto.RequestsAfterChangesDto;
 import ru.practicum.ewm.dto.RequestsToChangeDto;
 import ru.practicum.ewm.entity.Event;
+import ru.practicum.ewm.entity.EventState;
 import ru.practicum.ewm.entity.Request;
 import ru.practicum.ewm.entity.RequestStatus;
 import ru.practicum.ewm.entity.User;
@@ -172,8 +173,10 @@ public class RequestServiceImpl implements RequestService {
             throw new RequestValidationException("Инициатор события не может добавить запрос на участие в своём событии");
         }
         // нельзя участвовать в неопубликованном событии (Ожидается код ошибки 409)
-        // нужно разобраться где в событии фигурирует статус публикации
-
+        if (event.getState() != EventState.PUBLISHED) {
+            log.warn("Событие с id = {} не опубликовано", eventId);
+            throw new RequestValidationException("Нельзя участвовать в неопубликованном событии");
+        }
         // Проверяем достигнут ли лимит запросов на участие
         if (requestRepository.findAllByEventId(eventId).size() == event.getParticipantLimit()) {
             log.warn("Достигнут лимит запросов на участие в событии с id = {}", eventId);

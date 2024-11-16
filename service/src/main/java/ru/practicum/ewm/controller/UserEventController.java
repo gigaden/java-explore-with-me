@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import ru.practicum.ewm.dto.EventAdminRequestDto;
 import ru.practicum.ewm.dto.EventRequestDto;
 import ru.practicum.ewm.dto.EventResponseDto;
 import ru.practicum.ewm.dto.RequestResponseDto;
@@ -57,7 +58,7 @@ public class UserEventController {
         return new ResponseEntity<>(events, HttpStatus.OK);
     }
 
-    /* Добавление нового событиф. Обратите внимание: дата и время на которые намечено событие не может быть раньше,
+    /* Добавление нового события. Обратите внимание: дата и время на которые намечено событие не может быть раньше,
      чем через два часа от текущего момента*/
     @PostMapping
     public ResponseEntity<EventResponseDto> createEvent(@PathVariable long userId,
@@ -102,6 +103,15 @@ public class UserEventController {
         RequestsAfterChangesDto requestsAfterChangesDto = requestService.changeRequestsStatus(userId, eventId, requestsToChangeDto);
 
         return new ResponseEntity<>(requestsAfterChangesDto, HttpStatus.OK);
+    }
+
+    @PatchMapping("/{eventId}")
+    public ResponseEntity<EventResponseDto> changeEventByUser(@PathVariable long userId,
+                                                              @PathVariable long eventId,
+                                                              @Valid @RequestBody EventAdminRequestDto dto) {
+        EventResponseDto event = EventMapper.mapEventToResponseDto(eventService.updateEventById(eventId, dto));
+
+        return new ResponseEntity<>(event, HttpStatus.OK);
     }
 
 

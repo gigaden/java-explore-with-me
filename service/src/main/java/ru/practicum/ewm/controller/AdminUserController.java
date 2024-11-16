@@ -17,7 +17,6 @@ import ru.practicum.ewm.dto.UserRequestDto;
 import ru.practicum.ewm.dto.UserResponseDto;
 import ru.practicum.ewm.mapper.UserMapper;
 import ru.practicum.ewm.service.UserService;
-import ru.practicum.statistics.StatisticClient;
 
 import java.util.Collection;
 import java.util.List;
@@ -26,7 +25,6 @@ import java.util.List;
 @RequestMapping("/admin/users")
 public class AdminUserController {
 
-    StatisticClient statisticClient;
 
     @Qualifier("userServiceImpl")
     private final UserService userService;

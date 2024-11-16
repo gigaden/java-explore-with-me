@@ -18,7 +18,7 @@ import java.util.Collection;
 @RequestMapping("/categories")
 public class CategoryController {
 
-    CategoryService categoryService;
+    private final CategoryService categoryService;
 
     @Autowired
     public CategoryController(CategoryService categoryService) {

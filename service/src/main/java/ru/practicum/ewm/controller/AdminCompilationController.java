@@ -22,7 +22,7 @@ import ru.practicum.ewm.service.CompilationService;
 public class AdminCompilationController {
 
     @Qualifier("compilationServiceImpl")
-    CompilationService compilationService;
+    private final CompilationService compilationService;
 
     @Autowired
     public AdminCompilationController(CompilationService compilationService) {

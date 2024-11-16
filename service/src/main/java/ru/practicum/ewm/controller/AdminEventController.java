@@ -30,7 +30,7 @@ import java.util.List;
 public class AdminEventController {
 
     @Qualifier("eventServiceImpl")
-    EventService eventService;
+    private final EventService eventService;
 
     @Autowired
     public AdminEventController(EventService eventService) {

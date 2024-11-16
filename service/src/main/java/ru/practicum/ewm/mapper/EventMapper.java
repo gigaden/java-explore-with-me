@@ -37,7 +37,7 @@ public class EventMapper {
         return EventResponseDto.builder()
                 .annotation(event.getAnnotation())
                 .category(CategoryMapper.mapToCategoryDto(event.getCategory()))
-                .confirmedRequests(event.getConfirmedRequests()) // Добавить расчёт
+                .confirmedRequests(event.getConfirmedRequests())
                 .createdOn(event.getCreatedOn())
                 .description(event.getDescription())
                 .eventDate(event.getEventDate())

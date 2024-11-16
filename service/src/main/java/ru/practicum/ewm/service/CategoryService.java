@@ -1,5 +1,6 @@
 package ru.practicum.ewm.service;
 
+import ru.practicum.ewm.dto.CategoryCreateDto;
 import ru.practicum.ewm.dto.CategoryRequestDto;
 import ru.practicum.ewm.entity.Category;
 
@@ -7,7 +8,7 @@ import java.util.Collection;
 
 public interface CategoryService {
 
-    Category createCategory(CategoryRequestDto category);
+    Category createCategory(CategoryCreateDto category);
 
     Category updateCategory(long catId, CategoryRequestDto categoryDto);
 

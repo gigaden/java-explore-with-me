@@ -40,4 +40,6 @@ public interface EventService {
     Collection<Event> getAllEventsPublic(EventParamRequest param, HttpServletRequest request);
 
     Event getEventByIdPublic(long id, HttpServletRequest request);
+
+    Event updateEventByCurrentUser(long userId, long eventId, EventAdminRequestDto dto);
 }

@@ -8,7 +8,13 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 
-import java.util.HashMap;
+import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 @RestControllerAdvice
 @Slf4j
@@ -17,71 +23,90 @@ public class ErrorHandler {
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public HashMap<String, String> handleUserNotFound(final UserNotFoundException e, WebRequest request) {
+    public Map<String, String> handleUserNotFound(final UserNotFoundException e, WebRequest request) {
         log.error("Ошибка 404 NotFoundException: {} в запросе {}",
                 e.getMessage(), request.getDescription(false));
-        return buildErrorResponse(e.getMessage());
+        return buildErrorResponse(e, HttpStatus.NOT_FOUND, e.getReason());
     }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public HashMap<String, String> handleEventNotFound(final EventNotFoundException e, WebRequest request) {
-        log.error("Ошибка 404 EventFoundException: {} в запросе {}",
+    public Map<String, String> handleEventNotFound(final EventNotFoundException e, WebRequest request) {
+        log.error("Ошибка 404 EventNotFoundException: {} в запросе {}",
                 e.getMessage(), request.getDescription(false));
-        return buildErrorResponse(e.getMessage());
+        return buildErrorResponse(e, HttpStatus.NOT_FOUND, e.getReason());
     }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public HashMap<String, String> handleCategoryNotFound(final CategoryNotFoundException e, WebRequest request) {
+    public Map<String, String> handleCategoryNotFound(final CategoryNotFoundException e, WebRequest request) {
         log.error("Ошибка 404 CategoryNotFoundException: {} в запросе {}",
                 e.getMessage(), request.getDescription(false));
-        return buildErrorResponse(e.getMessage());
+        return buildErrorResponse(e, HttpStatus.NOT_FOUND, e.getReason());
     }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public HashMap<String, String> handleRequestNotFound(final RequestNotFoundException e, WebRequest request) {
+    public Map<String, String> handleRequestNotFound(final RequestNotFoundException e, WebRequest request) {
         log.error("Ошибка 404 RequestNotFoundException: {} в запросе {}",
                 e.getMessage(), request.getDescription(false));
-        return buildErrorResponse(e.getMessage());
+        return buildErrorResponse(e, HttpStatus.NOT_FOUND, e.getReason());
     }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public HashMap<String, String> handleCompilationNotFound(final CompilationNotFoundException e, WebRequest request) {
+    public Map<String, String> handleCompilationNotFound(final CompilationNotFoundException e, WebRequest request) {
         log.error("Ошибка 404 CompilationNotFoundException: {} в запросе {}",
                 e.getMessage(), request.getDescription(false));
-        return buildErrorResponse(e.getMessage());
+        return buildErrorResponse(e, HttpStatus.NOT_FOUND, e.getReason());
     }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public HashMap<String, String> handleCategoryValidation(final CategoryValidationException e, WebRequest request) {
+    public Map<String, String> handleCategoryValidation(final CategoryValidationException e, WebRequest request) {
         log.error("Ошибка 400 CategoryValidationException: {} в запросе {}",
                 e.getMessage(), request.getDescription(false));
-        return buildErrorResponse(e.getMessage());
+        return buildErrorResponse(e, HttpStatus.NOT_FOUND, e.getReason());
     }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.CONFLICT)
-    public HashMap<String, String> handleRequestValidation(final RequestValidationException e, WebRequest request) {
+    public Map<String, String> handleRequestValidation(final RequestValidationException e, WebRequest request) {
         log.error("Ошибка 409 RequestValidationException: {} в запросе {}",
                 e.getMessage(), request.getDescription(false));
-        return buildErrorResponse(e.getMessage());
+        return buildErrorResponse(e, HttpStatus.NOT_FOUND, e.getReason());
     }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.CONFLICT)
-    public HashMap<String, String> handleEventValidation(final EventValidationException e, WebRequest request) {
-        log.error("Ошибка 409 EventValidationException: {} в запросе {}",
+    public Map<String, String> handleCategoryNotEmpty(final CategoryNotEmptyException e, WebRequest request) {
+        log.error("Ошибка 409 CategoryNotEmptyException: {} в запросе {}",
                 e.getMessage(), request.getDescription(false));
-        return buildErrorResponse(e.getMessage());
+        return buildErrorResponse(e, HttpStatus.CONFLICT, e.getReason());
     }
 
-    public HashMap<String, String> buildErrorResponse(String message) {
-        HashMap<String, String> response = new HashMap<>();
-        response.put("error", message);
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public Map<String, String> handleEventValidation(final EventValidationException e, WebRequest request) {
+        log.error("Ошибка 409 EventValidationException: {} в запросе {}",
+                e.getMessage(), request.getDescription(false));
+        return buildErrorResponse(e, HttpStatus.NOT_FOUND, e.getReason());
+    }
+
+    @ExceptionHandler({MethodArgumentNotValidException.class, ValidationException.class, NumberFormatException.class})
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public Map<String, String> invalidMethodArgument(Exception e, WebRequest request) {
+        log.error("Ошибка 409 {}: {} в запросе {}",
+                e.getClass(), e.getMessage(), request.getDescription(false));
+        return buildErrorResponse(e, HttpStatus.BAD_REQUEST, "Incorrectly made request.");
+    }
+
+    public Map<String, String> buildErrorResponse(Exception e, HttpStatus status, String reason) {
+        Map<String, String> response = new LinkedHashMap<>();
+        response.put("status", status.name());
+        response.put("reason", reason);
+        response.put("message", e.getMessage());
+        response.put("timestamp", new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
         return response;
     }
 

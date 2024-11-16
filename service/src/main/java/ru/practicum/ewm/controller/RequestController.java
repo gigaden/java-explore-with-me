@@ -22,7 +22,7 @@ import java.util.Collection;
 public class RequestController {
 
     @Qualifier("requestServiceImpl")
-    RequestService requestService;
+    private final RequestService requestService;
 
     @Autowired
     public RequestController(RequestService requestService) {

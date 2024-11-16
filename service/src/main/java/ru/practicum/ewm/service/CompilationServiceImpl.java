@@ -24,9 +24,9 @@ import java.util.List;
 @Transactional
 public class CompilationServiceImpl implements CompilationService {
 
-    EventService eventService;
-    EventCompilationRepository eventCompilationRepository;
-    CompilationRepository compilationRepository;
+    private final EventService eventService;
+    private final EventCompilationRepository eventCompilationRepository;
+    private final CompilationRepository compilationRepository;
 
     @Autowired
     public CompilationServiceImpl(EventService eventService,
@@ -130,11 +130,12 @@ public class CompilationServiceImpl implements CompilationService {
             Collection<Event> events = eventService.getAllEventsByCompilationId(compilation.getId());
             response.add(CompilationMapper.mapToCompilationResponseDto(compilation, events));
         }
-        log.info("Подборки в дипазоне from = {} size = {} pinned = {} получены", from, size, pinned);
+        log.info("Подборки в диапазоне from = {} size = {} pinned = {} получены", from, size, pinned);
 
         return response;
     }
 
+    // Получаем подборку событий по id
     @Override
     @Transactional(readOnly = true)
     public CompilationResponseDto getCompilationEventsById(long compId) {
@@ -144,14 +145,6 @@ public class CompilationServiceImpl implements CompilationService {
         log.info("Подборка событий с id = {} получена", compId);
 
         return CompilationMapper.mapToCompilationResponseDto(compilation, events);
-    }
-
-
-    public void checkCompilationIsExist(long compId) {
-        if (compilationRepository.findById(compId).isEmpty()) {
-            log.warn("Подборка с id = {} не найдена", compId);
-            throw new CompilationNotFoundException(String.format("Compilation with id=%d was not found", compId));
-        }
     }
 
     public Compilation getCompilationById(long compId) {

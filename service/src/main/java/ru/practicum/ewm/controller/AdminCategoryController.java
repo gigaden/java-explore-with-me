@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import ru.practicum.ewm.dto.CategoryCreateDto;
 import ru.practicum.ewm.dto.CategoryRequestDto;
 import ru.practicum.ewm.dto.CategoryResponseDto;
 import ru.practicum.ewm.entity.Category;
@@ -23,7 +24,7 @@ import ru.practicum.ewm.service.CategoryService;
 public class AdminCategoryController {
 
     @Qualifier("categoryServiceImpl")
-    CategoryService categoryService;
+    private final CategoryService categoryService;
 
     @Autowired
     public AdminCategoryController(CategoryService categoryService) {
@@ -33,7 +34,7 @@ public class AdminCategoryController {
 
     // Добавляем категорию. Обратите внимание: имя категории должно быть уникальным
     @PostMapping
-    public ResponseEntity<CategoryResponseDto> createCategory(@Valid @RequestBody CategoryRequestDto category) {
+    public ResponseEntity<CategoryResponseDto> createCategory(@Valid @RequestBody CategoryCreateDto category) {
 
         Category newCategory = categoryService.createCategory(category);
 

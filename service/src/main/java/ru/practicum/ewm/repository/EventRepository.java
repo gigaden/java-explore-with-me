@@ -7,6 +7,7 @@ import ru.practicum.ewm.entity.Event;
 import ru.practicum.ewm.entity.EventState;
 
 import java.time.LocalDateTime;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -45,4 +46,6 @@ public interface EventRepository extends JpaRepository<Event, Long>, QuerydslPre
                                     LocalDateTime rangeStart, LocalDateTime rangeEnd, int from, int size);
 
     Optional<Event> findEventByIdAndState(long id, EventState state);
+
+    Collection<Event> getAllByCategoryId(long catId);
 }
