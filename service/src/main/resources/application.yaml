@@ -1,6 +1,6 @@
 statistics:
   server:
-    url: http://stats-server:9090
+    url: http://localhost:9090
 
 server:
   port: 8080
@@ -8,7 +8,7 @@ server:
 spring:
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://ewm-db:5432/main
+    url: jdbc:postgresql://localhost:6542/main
     username: main
     password: main
 
@@ -31,4 +31,4 @@ logging:
     org.springframework.web: INFO
 
 application:
-  name: main
+  name: service
