@@ -1,11 +1,7 @@
 package ru.practicum.ewm.service;
 
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.validation.Valid;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
-import ru.practicum.ewm.dto.EventAdminRequestDto;
+import ru.practicum.ewm.dto.EventAdminUpdateDto;
 import ru.practicum.ewm.dto.EventParamRequest;
 import ru.practicum.ewm.dto.EventRequestDto;
 import ru.practicum.ewm.entity.Event;
@@ -35,11 +31,11 @@ public interface EventService {
                                           int from,
                                           int size);
 
-    Event updateEventById(long eventId, EventAdminRequestDto dto);
+    Event updateEventById(long eventId, EventAdminUpdateDto dto);
 
     Collection<Event> getAllEventsPublic(EventParamRequest param, HttpServletRequest request);
 
     Event getEventByIdPublic(long id, HttpServletRequest request);
 
-    Event updateEventByCurrentUser(long userId, long eventId, EventAdminRequestDto dto);
+    Event updateEventByCurrentUser(long userId, long eventId, EventAdminUpdateDto dto);
 }

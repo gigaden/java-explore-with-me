@@ -48,7 +48,6 @@ public class AdminCategoryController {
     public ResponseEntity<CategoryResponseDto> updateCategory(@PathVariable long catId,
                                                               @Valid @RequestBody CategoryRequestDto categoryDto) {
 
-        System.out.println("yes");
         Category category = categoryService.updateCategory(catId, categoryDto);
 
         return new ResponseEntity<>(CategoryMapper.mapToCategoryDto(category), HttpStatus.OK);

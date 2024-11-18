@@ -28,7 +28,7 @@ public class CompilationController {
     }
 
     @GetMapping
-    public ResponseEntity<Collection<CompilationResponseDto>> getAllCompilations(@RequestParam Boolean pinned,
+    public ResponseEntity<Collection<CompilationResponseDto>> getAllCompilations(@RequestParam(defaultValue = "false") Boolean pinned,
                                                                                  @RequestParam(defaultValue = "0") int from,
                                                                                  @RequestParam(defaultValue = "10") int size) {
         Collection<CompilationResponseDto> compilationResponseDtos = compilationService.getCompilations(pinned, from, size);

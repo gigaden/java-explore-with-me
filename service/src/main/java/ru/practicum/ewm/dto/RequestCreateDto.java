@@ -20,11 +20,9 @@ public class RequestCreateDto {
 
 
     @NotNull
-    @NotBlank
     private Event event;
 
     @NotNull
-    @NotBlank
     private User requester;
 
     private RequestStatus status;

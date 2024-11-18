@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import ru.practicum.ewm.dto.EventAdminRequestDto;
+import ru.practicum.ewm.dto.EventAdminUpdateDto;
 import ru.practicum.ewm.dto.EventResponseDto;
 import ru.practicum.ewm.entity.EventState;
 import ru.practicum.ewm.mapper.EventMapper;
@@ -68,7 +69,7 @@ public class AdminEventController {
         */
     @PatchMapping("/{eventId}")
     public ResponseEntity<EventResponseDto> updateEventById(@PathVariable long eventId,
-                                                            @Valid @RequestBody EventAdminRequestDto dto) {
+                                                            @Valid @RequestBody EventAdminUpdateDto dto) {
         EventResponseDto event = EventMapper.mapEventToResponseDto(eventService.updateEventById(eventId, dto));
 
         return new ResponseEntity<>(event, HttpStatus.OK);

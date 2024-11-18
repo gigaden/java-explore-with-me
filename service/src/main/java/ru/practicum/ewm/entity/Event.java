@@ -36,7 +36,6 @@ public class Event {
 
     @Column(name = "annotation")
     @NotBlank
-    @NotNull
     private String annotation;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -49,16 +48,13 @@ public class Event {
 
     @Column(name = "description")
     @NotBlank
-    @NotNull
     private String description;
 
     @Column(name = "event_date")
-    @NotBlank
     @NotNull
     private LocalDateTime eventDate;
 
     @Column(name = "created_on")
-    @NotBlank
     @NotNull
     private LocalDateTime createdOn = LocalDateTime.now();
 
@@ -76,17 +72,14 @@ public class Event {
     private String locationLon;
 
     @Column(name = "paid")
-    @NotBlank
     @NotNull
     private boolean paid;
 
     @Column(name = "participant_limit")
-    @NotBlank
     @NotNull
     private int participantLimit;
 
     @Column(name = "request_moderation")
-    @NotBlank
     @NotNull
     private boolean requestModeration;
 
@@ -96,7 +89,6 @@ public class Event {
     private String title;
 
     @Column(name = "state")
-    @NotBlank
     @NotNull
     @Enumerated(EnumType.STRING)
     private EventState state = EventState.PENDING;

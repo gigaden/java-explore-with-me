@@ -1,5 +1,6 @@
 package ru.practicum.ewm.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -33,24 +34,21 @@ public class Request {
     private long id;
 
     @NotNull
-    @NotBlank
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "event")
     private Event event;
 
     @NotNull
-    @NotBlank
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "requester")
     private User requester;
 
     @NotNull
-    @NotBlank
     @Column(name = "created")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime created;
 
     @NotNull
-    @NotBlank
     @Enumerated(EnumType.STRING)
     @Column(name = "status")
     private RequestStatus status;

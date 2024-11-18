@@ -1,13 +1,14 @@
 package ru.practicum.ewm.controller;
 
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import ru.practicum.ewm.dto.EventParamRequest;
@@ -38,7 +39,7 @@ public class EventController {
         что по этому эндпоинту был осуществлен и обработан запрос, нужно сохранить в сервисе статистики
         В случае, если по заданным фильтрам не найдено ни одного события, возвращает пустой список */
     @GetMapping
-    public ResponseEntity<Collection<EventResponseDto>> getAllEventsPublic(EventParamRequest param,
+    public ResponseEntity<Collection<EventResponseDto>> getAllEventsPublic(@Valid @ModelAttribute EventParamRequest param,
                                                                            HttpServletRequest request) {
 
         Collection<EventResponseDto> eventResponseDtos = eventService.getAllEventsPublic(param, request).stream()

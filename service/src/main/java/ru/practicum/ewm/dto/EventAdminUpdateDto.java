@@ -8,6 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import ru.practicum.ewm.entity.EventState;
 import ru.practicum.ewm.entity.Location;
 
 import java.time.LocalDateTime;
@@ -16,15 +17,13 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class EventRequestDto {
+public class EventAdminUpdateDto {
 
-    @NotBlank
     @Size(min = 20, max = 2000, message = "Длина должна быть от 20 до 2000")
     private String annotation;
 
-    private long category;
+    private Long category;
 
-    @NotBlank
     @Size(min = 20, max = 7000, message = "Длина должна быть от 20 до 7000")
     private String description;
 
@@ -33,15 +32,14 @@ public class EventRequestDto {
 
     private Location location;
 
-    @Builder.Default
-    private boolean paid = false;
+    private Boolean paid;
 
-    @Min(0)
-    @Builder.Default
-    private int participantLimit = 0;
+    @Min(1)
+    private Integer participantLimit;
 
-    @Builder.Default
-    private boolean requestModeration = true;
+    private Boolean requestModeration;
+
+    private EventState stateAction;
 
     @Size(min = 3, max = 120, message = "Длина должна быт не менее 20")
     private String title;

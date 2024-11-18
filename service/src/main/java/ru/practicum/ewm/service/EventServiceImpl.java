@@ -12,7 +12,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.dto.StatisticDtoCreate;
+import ru.practicum.dto.StatisticDtoResponse;
 import ru.practicum.ewm.dto.EventAdminRequestDto;
+import ru.practicum.ewm.dto.EventAdminUpdateDto;
 import ru.practicum.ewm.dto.EventParamRequest;
 import ru.practicum.ewm.dto.EventRequestDto;
 import ru.practicum.ewm.entity.Event;
@@ -31,6 +33,9 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Service("eventServiceImpl")
 @Slf4j
@@ -172,7 +177,7 @@ public class EventServiceImpl implements EventService {
 
     @Override
     @Transactional
-    public Event updateEventById(long eventId, EventAdminRequestDto dto) {
+    public Event updateEventById(long eventId, EventAdminUpdateDto dto) {
         log.info("Пытаюсь обновить событие с id = {}", eventId);
         Event event = getEventById(eventId);
 
@@ -187,7 +192,7 @@ public class EventServiceImpl implements EventService {
 
     @Override
     @Transactional
-    public Event updateEventByCurrentUser(long userId, long eventId, EventAdminRequestDto dto) {
+    public Event updateEventByCurrentUser(long userId, long eventId, EventAdminUpdateDto dto) {
         log.info("Попытка пользователя с id = {} обновить событие с id = {}", userId, eventId);
         Event event = getEventById(eventId);
         User user = userService.getUserById(userId);
@@ -282,7 +287,6 @@ public class EventServiceImpl implements EventService {
         // Увеличиваем количество просмотров и добавляем это в БД
         event.setViews(event.getViews() + 1);
         eventRepository.save(event);
-
         sendStatisticToTheServer(request);
 
         return event;
@@ -303,7 +307,7 @@ public class EventServiceImpl implements EventService {
 
 
     // Проверяем событие и дто перед обновлением
-    public void checkEventBeforeUpdate(Event event, EventAdminRequestDto dto) {
+    public void checkEventBeforeUpdate(Event event, EventAdminUpdateDto dto) {
         if (Duration.between(LocalDateTime.now(), event.getEventDate()).toSeconds() <= secondsBeforePublish) {
             log.warn("дата начала изменяемого события должна быть не ранее чем за час от даты публикации");
             throw new EventValidationException("Событие не удовлетворяет правилам редактирования.");
@@ -312,7 +316,7 @@ public class EventServiceImpl implements EventService {
             log.warn("Событие можно отклонить, только если оно еще не опубликовано");
             throw new EventValidationException("Событие не удовлетворяет правилам редактирования.");
         }
-        if (!event.getState().equals(EventState.PENDING)) {
+        if (dto.getStateAction() == EventState.PUBLISH_EVENT && !event.getState().equals(EventState.PENDING)) {
             log.warn("Событие можно публиковать, только если оно в состоянии ожидания публикации");
             throw new EventValidationException("Событие не удовлетворяет правилам редактирования.");
         }
@@ -320,7 +324,7 @@ public class EventServiceImpl implements EventService {
 
 
     // Проверяем событие, пользователя и дто перед обновлением
-    public void checkUsersEventBeforeUpdate(User user, Event event, EventAdminRequestDto dto) {
+    public void checkUsersEventBeforeUpdate(User user, Event event, EventAdminUpdateDto dto) {
         if (!event.getInitiator().equals(user)) {
             log.warn("Изменить можно только своё событие");
             throw new EventValidationException("Событие не удовлетворяет правилам редактирования.");
@@ -335,7 +339,7 @@ public class EventServiceImpl implements EventService {
         }
     }
 
-    private void updateEventsFieldFromDto(Event event, EventAdminRequestDto dto) {
+    private void updateEventsFieldFromDto(Event event, EventAdminUpdateDto dto) {
         if (dto.getAnnotation() != null && !dto.getAnnotation().isBlank()) {
             event.setAnnotation(dto.getAnnotation());
         }
@@ -367,6 +371,10 @@ public class EventServiceImpl implements EventService {
                 event.setPublishedOn(LocalDateTime.now());
             } else if (dto.getStateAction().equals(EventState.REJECT_EVENT)) {
                 event.setState(EventState.CANCELED);
+            } else if (dto.getStateAction().equals(EventState.PUBLISH_EVENT)) {
+                event.setState(EventState.PUBLISHED);
+            } else if (dto.getStateAction().equals(EventState.SEND_TO_REVIEW)) {
+                event.setState(EventState.PENDING);
             }
         }
         if (dto.getTitle() != null && !dto.getTitle().isBlank()) {

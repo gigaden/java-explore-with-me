@@ -27,12 +27,8 @@ public class Compilation {
     private long id;
 
     @Column(name = "title")
-    @NotNull
-    @NotBlank
     private String title;
 
     @Column(name = "pinned")
-    @NotNull
-    @NotBlank
     boolean pinned;
 }

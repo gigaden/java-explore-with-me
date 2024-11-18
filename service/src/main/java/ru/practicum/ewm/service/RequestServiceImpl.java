@@ -63,7 +63,13 @@ public class RequestServiceImpl implements RequestService {
         User user = userService.getUserById(userId);
         Event event = eventService.getEventById(eventId);
         checkRequest(userId, eventId, user, event);
-        RequestStatus status = event.isRequestModeration() ? RequestStatus.PENDING : RequestStatus.CONFIRMED;
+        //RequestStatus status = event.isRequestModeration() ? RequestStatus.PENDING : RequestStatus.CONFIRMED;
+        RequestStatus status = RequestStatus.PENDING;
+        if (!event.isRequestModeration()) {
+            status = RequestStatus.CONFIRMED;
+        } else if (event.getParticipantLimit() == 0) {
+            status = RequestStatus.CONFIRMED;
+        }
         RequestCreateDto dto = RequestCreateDto.builder()
                 .requester(user)
                 .event(event)
@@ -88,7 +94,7 @@ public class RequestServiceImpl implements RequestService {
                                     requestId,
                                     userId));
                 });
-        request.setStatus(RequestStatus.PENDING);
+        request.setStatus(RequestStatus.CANCELED);
         requestRepository.save(request);
         log.info("Пользователь с id = {} отменил свою заявку на запрос с id = {}", userId, requestId);
 
@@ -158,7 +164,8 @@ public class RequestServiceImpl implements RequestService {
     }
 
 
-    public void checkRequest(long userId,
+    public void
+    checkRequest(long userId,
                              long eventId,
                              User user,
                              Event event) {
@@ -178,7 +185,9 @@ public class RequestServiceImpl implements RequestService {
             throw new RequestValidationException("Нельзя участвовать в неопубликованном событии");
         }
         // Проверяем достигнут ли лимит запросов на участие
-        if (requestRepository.findAllByEventId(eventId).size() == event.getParticipantLimit()) {
+        int a = requestRepository.findAllByEventId(eventId).size();
+        int b = event.getParticipantLimit();
+        if (requestRepository.findAllByEventId(eventId).size() > event.getParticipantLimit()) {
             log.warn("Достигнут лимит запросов на участие в событии с id = {}", eventId);
             throw new RequestValidationException("У события достигнут лимит запросов на участие");
         }
@@ -242,11 +251,15 @@ public class RequestServiceImpl implements RequestService {
         for (Request request: requests) {
             /* Статус можно изменить только у заявок, находящихся в состоянии ожидания
              и если не достигнут лимит события. В противном случае отправляем всё в rejected */
-            if (request.getStatus() != RequestStatus.PENDING) {
-                rejectedRequest.add(request);
-            } else {
+//            if (request.getStatus() != RequestStatus.PENDING) {
+//                rejectedRequest.add(request);
+//            } else {
+//                request.setStatus(dto.getStatus());
+//                confirmedRequest.add(request);
+//            }
+            if (request.getStatus() == RequestStatus.PENDING) {
                 request.setStatus(dto.getStatus());
-                confirmedRequest.add(request);
+                rejectedRequest.add(request);
             }
         }
 

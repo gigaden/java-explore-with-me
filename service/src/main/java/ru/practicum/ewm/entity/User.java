@@ -33,12 +33,9 @@ public class User {
 
     @Column(name = "email")
     @Email
-    @NotNull
-    @NotBlank
     private String email;
 
     @Column(name = "name")
-    @NotNull
     @NotBlank
     private String name;
 }

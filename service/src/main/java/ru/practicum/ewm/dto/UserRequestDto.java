@@ -3,6 +3,7 @@ package ru.practicum.ewm.dto;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -16,10 +17,10 @@ public class UserRequestDto {
 
     @Email
     @NotBlank
-    @NotNull
+    @Size(min = 6, max = 254, message = "Длина email должна быть от 6 до 254")
     private String email;
 
     @NotBlank
-    @NotNull
+    @Size(min = 2, max = 250, message = "Длина name должна быть от 2 до 254")
     private String name;
 }

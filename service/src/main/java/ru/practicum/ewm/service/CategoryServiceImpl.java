@@ -46,13 +46,15 @@ public class CategoryServiceImpl implements CategoryService {
     @Transactional
     public Category updateCategory(long catId, CategoryRequestDto categoryDto) {
         log.info("Пытаюсь обновить категорию с id = {}", catId);
-        checkCategoryName(categoryDto.getName());
         Category category = categoryRepository.findById(catId)
                 .orElseThrow(() -> {
                     log.info("Категория с id = {} не найдена", catId);
                     return new CategoryNotFoundException(String
                             .format("Категории с id = %d не существует", catId));
                 });
+        if (!category.getName().equals(categoryDto.getName())) {
+            checkCategoryName(categoryDto.getName());
+        }
         category.setName(categoryDto.getName());
         categoryRepository.save(category);
         log.info("Категория с id = {} обновлена", catId);
@@ -114,7 +116,7 @@ public class CategoryServiceImpl implements CategoryService {
     // Проверяем, есть ли связанные с категорией события
     private void checkCategoryHasEvents(long catId) {
         log.info("Проверяю связаны ли события с категорией с id = {}", catId);
-        if (eventRepository.getAllByCategoryId(catId).isEmpty()) {
+        if (!eventRepository.getAllByCategoryId(catId).isEmpty()) {
             log.warn("Категория с id = {} не пустая", catId);
             throw new CategoryNotFoundException(String.format("Существуют события, связанные с категорией %d", catId));
         }

@@ -16,11 +16,8 @@ import java.util.List;
 @AllArgsConstructor
 public class RequestsToChangeDto {
 
-    @NotNull
-    @NotBlank
     private List<Long> requestIds;
 
     @NotNull
-    @NotBlank
     private RequestStatus status;
 }

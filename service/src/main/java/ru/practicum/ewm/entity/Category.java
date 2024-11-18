@@ -26,7 +26,6 @@ public class Category {
     private long id;
 
     @Column(name = "name")
-    @NotNull
     @NotBlank
     private String name;
 }

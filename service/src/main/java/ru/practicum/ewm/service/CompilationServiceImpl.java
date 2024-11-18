@@ -42,8 +42,8 @@ public class CompilationServiceImpl implements CompilationService {
 
         log.info("Пытаюсь создать подборку = {} для событий = {}", compilationDto.getTitle(), compilationDto.getEvents());
         // Получаем список событий для подборки
-        List<Event> events = compilationDto.getEvents().stream()
-                .map(eventService::getEventById).toList();
+        List<Event> events = compilationDto.getEvents() != null ? compilationDto.getEvents().stream()
+                .map(eventService::getEventById).toList() : List.of();
         log.info("Получил список событий");
 
         // Добавляем новую подборку в таблицу compilations

@@ -1,5 +1,11 @@
 package ru.practicum.ewm.dto;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -12,11 +18,16 @@ import java.util.List;
 
 @Setter
 @Getter
+@Builder
 @NoArgsConstructor
+@AllArgsConstructor
 public class EventParamRequest {
 
+    @Size(min = 3)
     String text;
 
+    @NotNull
+    @NotEmpty
     List<Long> categories;
 
     Boolean paid;
@@ -29,9 +40,11 @@ public class EventParamRequest {
 
     String sort;
 
-    Integer from;
+    @Builder.Default
+    Integer from = 0;
 
-    Integer size;
+    @Builder.Default
+    Integer size = 10;
 
     public LocalDateTime getRangeStart() {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");

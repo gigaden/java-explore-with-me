@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 @Slf4j
 public class StatisticValidator {
 
-    // Проверяем поля перед добавление статистики
+    // Проверяем поля перед добавлением статистики
     public static void checkStatisticsParam(StatisticDtoCreate statistic) {
 
         if (statistic.getIp() == null || statistic.getIp().isEmpty()

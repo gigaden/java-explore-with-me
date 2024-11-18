@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import ru.practicum.ewm.dto.EventAdminRequestDto;
+import ru.practicum.ewm.dto.EventAdminUpdateDto;
 import ru.practicum.ewm.dto.EventRequestDto;
 import ru.practicum.ewm.dto.EventResponseDto;
 import ru.practicum.ewm.dto.RequestResponseDto;
@@ -23,7 +23,6 @@ import ru.practicum.ewm.mapper.EventMapper;
 import ru.practicum.ewm.mapper.RequestMapper;
 import ru.practicum.ewm.service.EventService;
 import ru.practicum.ewm.service.RequestService;
-
 
 import java.util.Collection;
 
@@ -62,7 +61,7 @@ public class UserEventController {
      чем через два часа от текущего момента*/
     @PostMapping
     public ResponseEntity<EventResponseDto> createEvent(@PathVariable long userId,
-                                                        @RequestBody EventRequestDto eventDto) {
+                                                        @Valid @RequestBody EventRequestDto eventDto) {
         EventResponseDto event = EventMapper.mapEventToResponseDto(eventService.createEvent(userId, eventDto));
 
         return new ResponseEntity<>(event, HttpStatus.CREATED);
@@ -108,7 +107,7 @@ public class UserEventController {
     @PatchMapping("/{eventId}")
     public ResponseEntity<EventResponseDto> changeEventByUser(@PathVariable long userId,
                                                               @PathVariable long eventId,
-                                                              @Valid @RequestBody EventAdminRequestDto dto) {
+                                                              @Valid @RequestBody EventAdminUpdateDto dto) {
         EventResponseDto event = EventMapper.mapEventToResponseDto(eventService.updateEventById(eventId, dto));
 
         return new ResponseEntity<>(event, HttpStatus.OK);

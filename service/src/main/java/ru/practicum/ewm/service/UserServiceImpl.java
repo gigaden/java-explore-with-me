@@ -2,6 +2,7 @@ package ru.practicum.ewm.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.ewm.dto.UserRequestDto;
@@ -32,7 +33,7 @@ public class UserServiceImpl implements UserService {
         log.info("Пытаюсь получить коллекцию всех пользователей");
         List<User> users;
         if (ids != null && !ids.isEmpty()) {
-            users = userRepository.findUsersByIdIn(ids);
+            users = userRepository.findUsersByIdInOrderById(ids);
         } else {
             users = userRepository.findUsersInterval(size, from);
         }
