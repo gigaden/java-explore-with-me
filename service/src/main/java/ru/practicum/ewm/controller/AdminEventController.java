@@ -12,12 +12,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import ru.practicum.ewm.dto.EventAdminRequestDto;
-import ru.practicum.ewm.dto.EventAdminUpdateDto;
-import ru.practicum.ewm.dto.EventResponseDto;
+import ru.practicum.ewm.dto.event.EventAdminUpdateDto;
+import ru.practicum.ewm.dto.event.EventResponseDto;
 import ru.practicum.ewm.entity.EventState;
 import ru.practicum.ewm.mapper.EventMapper;
-import ru.practicum.ewm.service.EventService;
+import ru.practicum.ewm.service.event.EventService;
 
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;

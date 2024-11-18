@@ -6,12 +6,12 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import ru.practicum.dto.StatisticDtoCreate;
+import ru.practicum.dto.StatisticDtoResponse;
 import ru.practicum.server.entity.Statistic;
 import ru.practicum.server.exception.StatisticValidationDateException;
 import ru.practicum.server.exception.StatisticValidationException;
 import ru.practicum.server.repository.StatisticRepository;
-import ru.practicum.dto.StatisticDtoCreate;
-import ru.practicum.dto.StatisticDtoResponse;
 
 import java.time.LocalDateTime;
 import java.util.Collection;
@@ -82,13 +82,13 @@ class StatisticServiceImplTest {
                 .build();
 
         Mockito
-                .when(repository.getAllStatisticDtoResponse(start, end, List.of(" "), false))
+                .when(repository.findStatistics(start, end, List.of(" "), false))
                 .thenReturn(List.of(statistics));
 
         Collection<StatisticDtoResponse> result = service.getAll(start, end, List.of(" "), false);
 
         Mockito.verify(repository, times(1))
-                .getAllStatisticDtoResponse(start, end, List.of(" "), false);
+                .findStatistics(start, end, List.of(" "), false);
 
         assertEquals(1, result.size());
     }

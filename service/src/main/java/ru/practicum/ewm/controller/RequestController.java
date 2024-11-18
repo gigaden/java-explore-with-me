@@ -11,9 +11,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import ru.practicum.ewm.dto.RequestResponseDto;
+import ru.practicum.ewm.dto.request.RequestResponseDto;
 import ru.practicum.ewm.mapper.RequestMapper;
-import ru.practicum.ewm.service.RequestService;
+import ru.practicum.ewm.service.request.RequestService;
 
 import java.util.Collection;
 

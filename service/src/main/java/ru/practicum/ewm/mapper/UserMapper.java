@@ -1,7 +1,7 @@
 package ru.practicum.ewm.mapper;
 
-import ru.practicum.ewm.dto.UserRequestDto;
-import ru.practicum.ewm.dto.UserResponseDto;
+import ru.practicum.ewm.dto.user.UserRequestDto;
+import ru.practicum.ewm.dto.user.UserResponseDto;
 import ru.practicum.ewm.entity.User;
 
 public class UserMapper {

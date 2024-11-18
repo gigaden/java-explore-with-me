@@ -8,9 +8,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import ru.practicum.ewm.dto.CategoryResponseDto;
+import ru.practicum.ewm.dto.category.CategoryResponseDto;
 import ru.practicum.ewm.mapper.CategoryMapper;
-import ru.practicum.ewm.service.CategoryService;
+import ru.practicum.ewm.service.category.CategoryService;
 
 import java.util.Collection;
 

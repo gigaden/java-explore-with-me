@@ -1,7 +1,5 @@
 package ru.practicum.statistics;
 
-import ru.practicum.statistics.exception.ClientRequestException;
-import ru.practicum.statistics.exception.ServerRequestException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -12,6 +10,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 import ru.practicum.dto.StatisticDtoCreate;
 import ru.practicum.dto.StatisticDtoResponse;
+import ru.practicum.statistics.exception.ClientRequestException;
+import ru.practicum.statistics.exception.ServerRequestException;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;

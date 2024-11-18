@@ -11,10 +11,10 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import ru.practicum.ewm.dto.EventParamRequest;
-import ru.practicum.ewm.dto.EventResponseDto;
+import ru.practicum.ewm.dto.event.EventParamRequest;
+import ru.practicum.ewm.dto.event.EventResponseDto;
 import ru.practicum.ewm.mapper.EventMapper;
-import ru.practicum.ewm.service.EventServiceImpl;
+import ru.practicum.ewm.service.event.EventServiceImpl;
 
 import java.util.Collection;
 

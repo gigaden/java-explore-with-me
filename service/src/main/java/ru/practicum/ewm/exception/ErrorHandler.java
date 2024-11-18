@@ -1,5 +1,6 @@
 package ru.practicum.ewm.exception;
 
+import jakarta.validation.ValidationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -9,11 +10,8 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 
 import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 
 @RestControllerAdvice
@@ -62,11 +60,11 @@ public class ErrorHandler {
     }
 
     @ExceptionHandler
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseStatus(HttpStatus.CONFLICT)
     public Map<String, String> handleCategoryValidation(final CategoryValidationException e, WebRequest request) {
         log.error("Ошибка 400 CategoryValidationException: {} в запросе {}",
                 e.getMessage(), request.getDescription(false));
-        return buildErrorResponse(e, HttpStatus.NOT_FOUND, e.getReason());
+        return buildErrorResponse(e, HttpStatus.CONFLICT, e.getReason());
     }
 
     @ExceptionHandler
@@ -74,7 +72,7 @@ public class ErrorHandler {
     public Map<String, String> handleRequestValidation(final RequestValidationException e, WebRequest request) {
         log.error("Ошибка 409 RequestValidationException: {} в запросе {}",
                 e.getMessage(), request.getDescription(false));
-        return buildErrorResponse(e, HttpStatus.NOT_FOUND, e.getReason());
+        return buildErrorResponse(e, HttpStatus.CONFLICT, e.getReason());
     }
 
     @ExceptionHandler
@@ -90,13 +88,21 @@ public class ErrorHandler {
     public Map<String, String> handleEventValidation(final EventValidationException e, WebRequest request) {
         log.error("Ошибка 409 EventValidationException: {} в запросе {}",
                 e.getMessage(), request.getDescription(false));
-        return buildErrorResponse(e, HttpStatus.NOT_FOUND, e.getReason());
+        return buildErrorResponse(e, HttpStatus.CONFLICT, e.getReason());
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public Map<String, String> handleUserValidation(final UserValidationException e, WebRequest request) {
+        log.error("Ошибка 409 UserValidationException: {} в запросе {}",
+                e.getMessage(), request.getDescription(false));
+        return buildErrorResponse(e, HttpStatus.CONFLICT, e.getReason());
     }
 
     @ExceptionHandler({MethodArgumentNotValidException.class, ValidationException.class, NumberFormatException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public Map<String, String> invalidMethodArgument(Exception e, WebRequest request) {
-        log.error("Ошибка 409 {}: {} в запросе {}",
+        log.error("Ошибка 400 {}: {} в запросе {}",
                 e.getClass(), e.getMessage(), request.getDescription(false));
         return buildErrorResponse(e, HttpStatus.BAD_REQUEST, "Incorrectly made request.");
     }

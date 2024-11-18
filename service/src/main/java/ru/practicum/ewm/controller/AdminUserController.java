@@ -13,10 +13,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import ru.practicum.ewm.dto.UserRequestDto;
-import ru.practicum.ewm.dto.UserResponseDto;
+import ru.practicum.ewm.dto.user.UserRequestDto;
+import ru.practicum.ewm.dto.user.UserResponseDto;
 import ru.practicum.ewm.mapper.UserMapper;
-import ru.practicum.ewm.service.UserService;
+import ru.practicum.ewm.service.user.UserService;
 
 import java.util.Collection;
 import java.util.List;

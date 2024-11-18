@@ -1,7 +1,7 @@
 package ru.practicum.ewm.mapper;
 
-import ru.practicum.ewm.dto.EventRequestDto;
-import ru.practicum.ewm.dto.EventResponseDto;
+import ru.practicum.ewm.dto.event.EventRequestDto;
+import ru.practicum.ewm.dto.event.EventResponseDto;
 import ru.practicum.ewm.entity.Category;
 import ru.practicum.ewm.entity.Event;
 import ru.practicum.ewm.entity.EventState;

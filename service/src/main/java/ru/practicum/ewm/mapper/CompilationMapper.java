@@ -1,6 +1,6 @@
 package ru.practicum.ewm.mapper;
 
-import ru.practicum.ewm.dto.CompilationResponseDto;
+import ru.practicum.ewm.dto.compilation.CompilationResponseDto;
 import ru.practicum.ewm.entity.Compilation;
 import ru.practicum.ewm.entity.Event;
 

@@ -13,16 +13,16 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import ru.practicum.ewm.dto.EventAdminUpdateDto;
-import ru.practicum.ewm.dto.EventRequestDto;
-import ru.practicum.ewm.dto.EventResponseDto;
-import ru.practicum.ewm.dto.RequestResponseDto;
-import ru.practicum.ewm.dto.RequestsAfterChangesDto;
-import ru.practicum.ewm.dto.RequestsToChangeDto;
+import ru.practicum.ewm.dto.event.EventAdminUpdateDto;
+import ru.practicum.ewm.dto.event.EventRequestDto;
+import ru.practicum.ewm.dto.event.EventResponseDto;
+import ru.practicum.ewm.dto.request.RequestResponseDto;
+import ru.practicum.ewm.dto.request.RequestsAfterChangesDto;
+import ru.practicum.ewm.dto.request.RequestsToChangeDto;
 import ru.practicum.ewm.mapper.EventMapper;
 import ru.practicum.ewm.mapper.RequestMapper;
-import ru.practicum.ewm.service.EventService;
-import ru.practicum.ewm.service.RequestService;
+import ru.practicum.ewm.service.event.EventService;
+import ru.practicum.ewm.service.request.RequestService;
 
 import java.util.Collection;
 
@@ -38,7 +38,7 @@ public class UserEventController {
 
     @Autowired
     public UserEventController(EventService eventService,
-                               RequestService requestService){
+                               RequestService requestService) {
         this.eventService = eventService;
         this.requestService = requestService;
     }
@@ -47,11 +47,10 @@ public class UserEventController {
      В случае, если по заданным фильтрам не найдено ни одного события, возвращает пустой список */
     @GetMapping
     public ResponseEntity<Collection<EventResponseDto>> getEvents(@PathVariable long userId,
-                                                                   @RequestParam(defaultValue = "0") int from,
-                                                                   @RequestParam(defaultValue = "10") int size) {
+                                                                  @RequestParam(defaultValue = "0") int from,
+                                                                  @RequestParam(defaultValue = "10") int size) {
         Collection<EventResponseDto> events = eventService.getAllUsersEvents(userId, from, size).stream()
                 .map(EventMapper::mapEventToResponseDto).toList();
-
 
 
         return new ResponseEntity<>(events, HttpStatus.OK);
@@ -108,7 +107,8 @@ public class UserEventController {
     public ResponseEntity<EventResponseDto> changeEventByUser(@PathVariable long userId,
                                                               @PathVariable long eventId,
                                                               @Valid @RequestBody EventAdminUpdateDto dto) {
-        EventResponseDto event = EventMapper.mapEventToResponseDto(eventService.updateEventById(eventId, dto));
+        EventResponseDto event = EventMapper.mapEventToResponseDto(eventService
+                .updateEventByCurrentUser(userId, eventId, dto));
 
         return new ResponseEntity<>(event, HttpStatus.OK);
     }

@@ -1,7 +1,7 @@
 package ru.practicum.ewm.mapper;
 
-import ru.practicum.ewm.dto.RequestCreateDto;
-import ru.practicum.ewm.dto.RequestResponseDto;
+import ru.practicum.ewm.dto.request.RequestCreateDto;
+import ru.practicum.ewm.dto.request.RequestResponseDto;
 import ru.practicum.ewm.entity.Request;
 
 import java.time.LocalDateTime;

@@ -1,9 +1,9 @@
 package ru.practicum.server.validator;
 
 import lombok.extern.slf4j.Slf4j;
+import ru.practicum.dto.StatisticDtoCreate;
 import ru.practicum.server.exception.StatisticValidationDateException;
 import ru.practicum.server.exception.StatisticValidationException;
-import ru.practicum.dto.StatisticDtoCreate;
 
 import java.time.LocalDateTime;
 

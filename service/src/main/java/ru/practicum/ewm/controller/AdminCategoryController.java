@@ -12,12 +12,12 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import ru.practicum.ewm.dto.CategoryCreateDto;
-import ru.practicum.ewm.dto.CategoryRequestDto;
-import ru.practicum.ewm.dto.CategoryResponseDto;
+import ru.practicum.ewm.dto.category.CategoryCreateDto;
+import ru.practicum.ewm.dto.category.CategoryRequestDto;
+import ru.practicum.ewm.dto.category.CategoryResponseDto;
 import ru.practicum.ewm.entity.Category;
 import ru.practicum.ewm.mapper.CategoryMapper;
-import ru.practicum.ewm.service.CategoryService;
+import ru.practicum.ewm.service.category.CategoryService;
 
 @RestController
 @RequestMapping("/admin/categories")
