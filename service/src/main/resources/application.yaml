@@ -8,7 +8,7 @@ server:
 spring:
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://ewm-db:6542/main
+    url: jdbc:postgresql://ewm-db:5432/main
     username: main
     password: main
 
