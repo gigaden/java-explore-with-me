@@ -2,11 +2,7 @@ package ru.practicum.ewm.mapper;
 
 import ru.practicum.ewm.dto.event.EventRequestDto;
 import ru.practicum.ewm.dto.event.EventResponseDto;
-import ru.practicum.ewm.entity.Category;
-import ru.practicum.ewm.entity.Event;
-import ru.practicum.ewm.entity.EventState;
-import ru.practicum.ewm.entity.Location;
-import ru.practicum.ewm.entity.User;
+import ru.practicum.ewm.entity.*;
 
 import java.time.LocalDateTime;
 
