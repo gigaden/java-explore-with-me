@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.ewm.dto.category.CategoryCreateDto;
 import ru.practicum.ewm.dto.category.CategoryRequestDto;
+import ru.practicum.ewm.dto.category.CategoryResponseDto;
 import ru.practicum.ewm.entity.Category;
 import ru.practicum.ewm.exception.CategoryNotFoundException;
 import ru.practicum.ewm.exception.CategoryValidationException;
@@ -33,18 +34,18 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     @Transactional
-    public Category createCategory(CategoryCreateDto dto) {
+    public CategoryResponseDto createCategory(CategoryCreateDto dto) {
         log.info("Пытаюсь добавить новую категорию {}", dto);
         checkCategoryName(dto.getName());
         Category newCategory = categoryRepository.save(CategoryMapper.mapDtoToCategory(dto));
         log.info("Новая категория добавлена {}", newCategory);
 
-        return newCategory;
+        return CategoryMapper.mapToCategoryDto(newCategory);
     }
 
     @Override
     @Transactional
-    public Category updateCategory(long catId, CategoryRequestDto categoryDto) {
+    public CategoryResponseDto updateCategory(long catId, CategoryRequestDto categoryDto) {
         log.info("Пытаюсь обновить категорию с id = {}", catId);
         Category category = categoryRepository.findById(catId)
                 .orElseThrow(() -> {
@@ -58,7 +59,7 @@ public class CategoryServiceImpl implements CategoryService {
         category.setName(categoryDto.getName());
         categoryRepository.save(category);
         log.info("Категория с id = {} обновлена", catId);
-        return category;
+        return CategoryMapper.mapToCategoryDto(category);
     }
 
     @Override

@@ -36,9 +36,7 @@ public class AdminCategoryController {
     @PostMapping
     public ResponseEntity<CategoryResponseDto> createCategory(@Valid @RequestBody CategoryCreateDto category) {
 
-        Category newCategory = categoryService.createCategory(category);
-
-        return new ResponseEntity<>(CategoryMapper.mapToCategoryDto(newCategory), HttpStatus.CREATED);
+        return new ResponseEntity<>(categoryService.createCategory(category), HttpStatus.CREATED);
 
     }
 
@@ -48,9 +46,7 @@ public class AdminCategoryController {
     public ResponseEntity<CategoryResponseDto> updateCategory(@PathVariable long catId,
                                                               @Valid @RequestBody CategoryRequestDto categoryDto) {
 
-        Category category = categoryService.updateCategory(catId, categoryDto);
-
-        return new ResponseEntity<>(CategoryMapper.mapToCategoryDto(category), HttpStatus.OK);
+        return new ResponseEntity<>(categoryService.updateCategory(catId, categoryDto), HttpStatus.OK);
 
     }
 
