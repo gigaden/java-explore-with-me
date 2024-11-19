@@ -48,7 +48,7 @@ services:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://ewm-db:5432/main
       - SPRING_DATASOURCE_USERNAME=main
       - SPRING_DATASOURCE_PASSWORD=main
-      - STATS_SERVER_URL=http://stats-server:9090
+      - STATISTICS_SERVER_URL=http://stats-server:9090
     volumes:
       - ./logs/ewm-service:/app/logs # Логи ewm-service сохраняются на хосте
       - ./reports/ewm-service:/app/reports # Отчеты ewm-service сохраняются на хосте
