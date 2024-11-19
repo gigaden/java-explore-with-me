@@ -97,9 +97,9 @@ public class CategoryServiceImpl implements CategoryService {
     // Проверяем уникальность имени категории
     private void checkCategoryName(String name) {
         log.info("Проверяем имя категории name = {} на уникальность", name);
-        List<String> names = categoryRepository.findAll().stream().map(Category::getName).toList();
+        final List<Category> names = categoryRepository.findAllByNameIgnoreCase(name);
 
-        if (names.contains(name)) {
+        if (!names.isEmpty()) {
             log.warn("Имя категории = {} не уникально", name);
             throw new CategoryValidationException("Имя категории должно быть уникальным");
         }

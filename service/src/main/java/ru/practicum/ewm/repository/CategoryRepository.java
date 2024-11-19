@@ -15,4 +15,6 @@ public interface CategoryRepository extends JpaRepository<Category, Long> {
             """, nativeQuery = true)
     List<Category> findCategoriesBetweenFromAndSize(int from, int size);
 
+    List<Category> findAllByNameIgnoreCase(String name);
+
 }
