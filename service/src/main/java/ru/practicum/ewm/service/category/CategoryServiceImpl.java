@@ -15,7 +15,6 @@ import ru.practicum.ewm.repository.CategoryRepository;
 import ru.practicum.ewm.repository.EventRepository;
 
 import java.util.Collection;
-import java.util.List;
 
 @Slf4j
 @Service("categoryServiceImpl")
@@ -97,9 +96,7 @@ public class CategoryServiceImpl implements CategoryService {
     // Проверяем уникальность имени категории
     private void checkCategoryName(String name) {
         log.info("Проверяем имя категории name = {} на уникальность", name);
-        final List<Category> names = categoryRepository.findAllByNameIgnoreCase(name);
-
-        if (!names.isEmpty()) {
+        if (categoryRepository.existsByName(name)) {
             log.warn("Имя категории = {} не уникально", name);
             throw new CategoryValidationException("Имя категории должно быть уникальным");
         }
