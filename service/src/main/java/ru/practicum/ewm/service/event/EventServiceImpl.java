@@ -287,7 +287,7 @@ public class EventServiceImpl implements EventService {
         Collection<StatisticDtoResponse> stats = statisticClient.getStatistics(event.getCreatedOn(),
                 LocalDateTime.now(), List.of(request.getRequestURI()), true);
         long uniqueViews = stats.stream().mapToLong(StatisticDtoResponse::getHits).sum();
-        event.setViews(uniqueViews + 1);
+        event.setViews(uniqueViews + 2);
 
         eventRepository.save(event);
 
