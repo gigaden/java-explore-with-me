@@ -1,13 +1,7 @@
 package ru.practicum.ewm.dto.event;
 
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
@@ -25,8 +19,6 @@ public class EventParamRequest {
     @Size(min = 3)
     String text;
 
-    @NotNull
-    @NotEmpty
     List<Long> categories;
 
     Boolean paid;
