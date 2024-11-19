@@ -93,22 +93,13 @@ public class CompilationServiceImpl implements CompilationService {
         log.info("Пытаюсь обновить подборку с id = {}", compId);
         Compilation compilation = getCompilationById(compId);
         Collection<Event> events = eventService.getAllEventsByCompilationId(compId);
-        compilation.setPinned(compilationDto.getPinned() != null ? compilationDto.getPinned() : compilation.isPinned());
-        compilation.setTitle(compilationDto.getTitle() != null ? compilationDto.getTitle() : compilation.getTitle());
+
+        // Обновляем поля подборки
+        updateCompilationsParams(compilation, compilationDto);
 
         if (compilationDto.getEvents() != null && !compilationDto.getEvents().isEmpty()) {
-            // Если есть запрос на изменение событий в подборке, то получаем список новых событий
-            events = compilationDto.getEvents().stream()
-                    .map(eventService::getEventById).toList();
-            // Удаляем старые события из events_compilation
-            eventCompilationRepository.deleteAllByCompilationId(compId);
-            // Добавляем новые события в таблицу
-            List<EventCompilation> eventCompilations = events.stream()
-                    .map(e -> eventCompilationRepository.save(EventCompilation.builder()
-                            .compilation(compilation)
-                            .event(e)
-                            .build())).toList();
-            eventCompilationRepository.saveAll(eventCompilations);
+            // Если есть запрос на изменение событий в подборке, то меняем их
+            changeEventsInTheCompilation(compId, compilation, compilationDto, events);
         }
 
         compilationRepository.save(compilation);
@@ -158,6 +149,26 @@ public class CompilationServiceImpl implements CompilationService {
         log.info("Подборка с id = {} получена", compId);
 
         return compilation;
+    }
+
+    public void updateCompilationsParams(Compilation compilation, CompilationUpdateDto compilationDto) {
+        compilation.setPinned(compilationDto.getPinned() != null ? compilationDto.getPinned() : compilation.isPinned());
+        compilation.setTitle(compilationDto.getTitle() != null ? compilationDto.getTitle() : compilation.getTitle());
+    }
+
+    public void changeEventsInTheCompilation(long compId, Compilation compilation,
+                                             CompilationUpdateDto compilationDto, Collection<Event> events) {
+        events = compilationDto.getEvents().stream()
+                .map(eventService::getEventById).toList();
+        // Удаляем старые события из events_compilation
+        eventCompilationRepository.deleteAllByCompilationId(compId);
+        // Добавляем новые события в таблицу
+        List<EventCompilation> eventCompilations = events.stream()
+                .map(e -> eventCompilationRepository.save(EventCompilation.builder()
+                        .compilation(compilation)
+                        .event(e)
+                        .build())).toList();
+        eventCompilationRepository.saveAll(eventCompilations);
     }
 
 
