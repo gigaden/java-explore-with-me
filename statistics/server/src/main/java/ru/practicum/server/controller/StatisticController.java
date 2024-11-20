@@ -10,9 +10,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import ru.practicum.server.service.StatisticService;
 import ru.practicum.dto.StatisticDtoCreate;
 import ru.practicum.dto.StatisticDtoResponse;
+import ru.practicum.server.service.StatisticService;
 
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;

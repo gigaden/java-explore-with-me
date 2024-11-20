@@ -4,12 +4,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.practicum.dto.StatisticDtoCreate;
+import ru.practicum.dto.StatisticDtoResponse;
 import ru.practicum.server.entity.Statistic;
 import ru.practicum.server.mapper.StatisticMapper;
 import ru.practicum.server.repository.StatisticRepository;
 import ru.practicum.server.validator.StatisticValidator;
-import ru.practicum.dto.StatisticDtoCreate;
-import ru.practicum.dto.StatisticDtoResponse;
 
 import java.time.LocalDateTime;
 import java.util.Collection;
@@ -47,12 +47,7 @@ public class StatisticServiceImpl implements StatisticService {
                 start, end, uri, unique);
 
         StatisticValidator.checkStatisticsDates(start, end);
-        /* Если список с ури не передан, то делаем его специально налл для передачи в запрос репозитория
-        именно нал и получения списка всех объектов */
-        List<String> uriFilter = (uri == null || uri.isEmpty()) ? null : uri;
-
-        List<StatisticDtoResponse> statistics = repository
-                .getAllStatisticDtoResponse(start, end, uriFilter, unique);
+        List<StatisticDtoResponse> statistics = repository.findStatistics(start, end, uri, unique);
 
         log.info("Получены записи статистики с параметрами: start={}, end={}, uri={}, unique={}",
                 start, end, uri, unique);

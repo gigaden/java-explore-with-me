@@ -1,15 +1,17 @@
-import exception.ClientRequestException;
-import exception.ServerRequestException;
+package ru.practicum.statistics;
+
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 import ru.practicum.dto.StatisticDtoCreate;
 import ru.practicum.dto.StatisticDtoResponse;
+import ru.practicum.statistics.exception.ClientRequestException;
+import ru.practicum.statistics.exception.ServerRequestException;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -20,19 +22,16 @@ import java.util.List;
 
 
 @Slf4j
-@Component
+@Service
 public class StatisticClient {
 
     private final RestClient restClient;
     private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-
-    @Value("${statistic-server.url}")
-    private String baseUrl;
     private final String postUri = "/hit";
     private final String getUri = "/stats";
 
     @Autowired
-    public StatisticClient(@Value("${statistic-server.url}") String baseUrl) {
+    public StatisticClient(@Value("${statistics.server.url}") String baseUrl) {
         restClient = RestClient.builder()
                 .baseUrl(baseUrl)
                 .build();
@@ -96,27 +95,6 @@ public class StatisticClient {
                 start, end, uris, unique);
 
         return statistics;
-    }
-
-    // Для проверки, что клиент работает
-    public static void main(String[] args) {
-        final StatisticClient client = new StatisticClient("http://localhost:9090");
-        final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-        Collection<StatisticDtoResponse> result = client
-                .getStatistics(LocalDateTime.parse("2022-09-06 11:00:23", formatter),
-                        LocalDateTime.parse("2024-09-06 11:00:23", formatter), List.of(), false);
-
-        System.out.println(result);
-
-        StatisticDtoCreate statistic = client.createStatistic(StatisticDtoCreate.builder()
-                .uri("/event")
-                .app("main app")
-                .ip("my.ip.address")
-                .timestamp(LocalDateTime.parse(LocalDateTime.now().format(formatter), formatter))
-                .build());
-
-        System.out.println(statistic);
-
     }
 
 }

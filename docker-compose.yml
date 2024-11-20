@@ -1,3 +1,5 @@
+version: '3.8'
+
 services:
   stats-server:
     build: statistics/server
@@ -12,6 +14,9 @@ services:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://stats-db:5432/stat
       - SPRING_DATASOURCE_USERNAME=stat
       - SPRING_DATASOURCE_PASSWORD=stat
+#    volumes:
+#      - ./logs/stats-server:/app/logs # Логи stats-server сохраняются на хосте
+#      - ./reports/stats-server:/app/reports # Отчеты stats-server сохраняются на хосте
 
   stats-db:
     image: postgres:16.1
@@ -27,6 +32,8 @@ services:
       timeout: 5s
       interval: 5s
       retries: 10
+#    volumes:
+#      - ./data/stats-db:/var/lib/postgresql/data # Данные Postgres сохраняются на хосте
 
   ewm-service:
     build: service
@@ -41,7 +48,10 @@ services:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://ewm-db:5432/main
       - SPRING_DATASOURCE_USERNAME=main
       - SPRING_DATASOURCE_PASSWORD=main
-      - STATS_SERVER_URL=http://stats-server:9090
+      - STATISTICS_SERVER_URL=http://stats-server:9090
+#    volumes:
+#      - ./logs/ewm-service:/app/logs # Логи ewm-service сохраняются на хосте
+#      - ./reports/ewm-service:/app/reports # Отчеты ewm-service сохраняются на хосте
 
   ewm-db:
     image: postgres:16.1
@@ -57,3 +67,7 @@ services:
       timeout: 5s
       interval: 5s
       retries: 10
+#    volumes:
+#      - ./data/ewm-db:/var/lib/postgresql/data # Данные Postgres сохраняются на хосте
+
+

@@ -7,8 +7,10 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 
-import java.time.format.DateTimeParseException;
-import java.util.HashMap;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 @RestControllerAdvice
 @Slf4j
@@ -17,39 +19,26 @@ public class ErrorHandler {
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.FORBIDDEN)
-    public HashMap<String, String> handleValidation(final StatisticValidationException e, WebRequest request) {
+    public Map<String, String> handleValidation(final StatisticValidationException e, WebRequest request) {
         log.error("Ошибка 403 StatisticValidationException: {} в запросе {}",
                 e.getMessage(), request.getDescription(false));
-        return buildErrorResponse(e.getMessage());
+        return buildErrorResponse(e, HttpStatus.FORBIDDEN, e.getReason());
     }
 
     @ExceptionHandler
-    @ResponseStatus(HttpStatus.FORBIDDEN)
-    public HashMap<String, String> handleValidation(final StatisticValidationDateException e, WebRequest request) {
-        log.error("Ошибка 403 StatisticValidationDateException: {} в запросе {}",
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public Map<String, String> handleValidation(final StatisticValidationDateException e, WebRequest request) {
+        log.error("Ошибка 400 StatisticValidationDateException: {} в запросе {}",
                 e.getMessage(), request.getDescription(false));
-        return buildErrorResponse(e.getMessage());
+        return buildErrorResponse(e, HttpStatus.BAD_REQUEST, e.getReason());
     }
 
-    @ExceptionHandler
-    @ResponseStatus(HttpStatus.NOT_ACCEPTABLE)
-    public HashMap<String, String> handleValidation(final DateTimeParseException e, WebRequest request) {
-        log.error("Ошибка 406 DateTimeParseException: {} в запросе {}",
-                e.getMessage(), request.getDescription(false));
-        return buildErrorResponse(e.getMessage());
-    }
-
-//    @ExceptionHandler
-//    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-//    public HashMap<String, String> handleOtherExc(final Throwable e, WebRequest request) {
-//        log.error("Ошибка 500: {} в запросе {}", e.getMessage(),
-//                request.getDescription(false));
-//        return buildErrorResponse(e.getMessage());
-//    }
-
-    public HashMap<String, String> buildErrorResponse(String message) {
-        HashMap<String, String> response = new HashMap<>();
-        response.put("error", message);
+    public Map<String, String> buildErrorResponse(Exception e, HttpStatus status, String reason) {
+        Map<String, String> response = new LinkedHashMap<>();
+        response.put("status", status.name());
+        response.put("reason", reason);
+        response.put("message", e.getMessage());
+        response.put("timestamp", new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
         return response;
     }
 

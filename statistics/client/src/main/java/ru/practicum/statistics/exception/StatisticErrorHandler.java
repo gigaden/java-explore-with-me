@@ -1,4 +1,4 @@
-package exception;
+package ru.practicum.statistics.exception;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -11,7 +11,7 @@ import java.util.HashMap;
 
 @RestControllerAdvice
 @Slf4j
-public class ErrorHandler {
+public class StatisticErrorHandler {
 
 
     @ExceptionHandler

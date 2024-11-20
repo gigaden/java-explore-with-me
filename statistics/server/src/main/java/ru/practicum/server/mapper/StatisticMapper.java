@@ -1,7 +1,7 @@
 package ru.practicum.server.mapper;
 
-import ru.practicum.server.entity.Statistic;
 import ru.practicum.dto.StatisticDtoCreate;
+import ru.practicum.server.entity.Statistic;
 
 public class StatisticMapper {
 
