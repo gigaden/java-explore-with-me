@@ -40,9 +40,11 @@ public class ReactionServiceImpl implements ReactionService {
     // Добавляем новую реакцию в бд
     @Override
     public ReactionResponseDto createReaction(ReactionCreateDto dto) {
-        log.info("Пытаюсь добавит новую реакцию пользователя id = {} на событие id = {}", dto.getUserId(), dto.getEventId());
+        log.info("Пытаюсь добавит новую реакцию {} пользователя id = {} на событие id = {}", dto, dto.getUserId(), dto.getEventId());
         final User user = userService.getUserById(dto.getUserId());
         final Event event = eventService.getEventById(dto.getEventId());
+
+        checkReactionBeforeCreate(user, event);
 
         final Reaction reaction = reactionRepository.save(ReactionMapper.mapDtoToReaction(dto, event, user));
         log.info("Реакция пользователя id = {} на событие id = {} добавлена", dto.getUserId(), dto.getEventId());
@@ -90,6 +92,19 @@ public class ReactionServiceImpl implements ReactionService {
         log.info("Реакция с id = {} получена", reactId);
 
         return reaction;
+    }
+
+
+    // Проверяем перед созданием новой реакции
+    public void checkReactionBeforeCreate(User user, Event event) {
+        if (event.getInitiator().equals(user)) {
+            log.warn("Юзер id = {} попытался поставить реакцию своему событию id = {}", user.getId(), event.getId());
+            throw new ReactionValidationException("Нельзя ставить реакции самому себе");
+        }
+        if (!event.getState().equals(EventState.PUBLISHED)) {
+            log.warn("Юзер id = {} попытался поставить реакцию неопубликованному событию id = {}", user.getId(), event.getId());
+            throw new ReactionValidationException("Нельзя ставить реакцию неопубликованным событиям");
+        }
     }
 
 

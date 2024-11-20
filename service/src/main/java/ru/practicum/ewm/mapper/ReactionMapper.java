@@ -26,6 +26,7 @@ public class ReactionMapper {
                 .id(reaction.getId())
                 .user(reaction.getUser().getId())
                 .event(reaction.getEvent().getId())
+                .reaction(reaction.getReaction())
                 .createdAt(reaction.getCreatedAt())
                 .build();
     }
