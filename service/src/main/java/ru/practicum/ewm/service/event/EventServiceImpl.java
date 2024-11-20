@@ -20,6 +20,8 @@ import ru.practicum.ewm.dto.event.EventResponseDto;
 import ru.practicum.ewm.dto.reaction.ReactionResponseDto;
 import ru.practicum.ewm.entity.Event;
 import ru.practicum.ewm.entity.EventState;
+import ru.practicum.ewm.entity.QEvent;
+import ru.practicum.ewm.entity.QRequest;
 import ru.practicum.ewm.entity.RequestStatus;
 import ru.practicum.ewm.entity.User;
 import ru.practicum.ewm.exception.EventNotFoundException;
@@ -31,8 +33,6 @@ import ru.practicum.ewm.repository.ReactionRepository;
 import ru.practicum.ewm.service.category.CategoryService;
 import ru.practicum.ewm.service.user.UserService;
 import ru.practicum.statistics.StatisticClient;
-import ru.practicum.ewm.entity.QEvent;
-import ru.practicum.ewm.entity.QRequest;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -313,7 +313,7 @@ public class EventServiceImpl implements EventService {
         log.info("Получаем список реакция для события с id = {}", eventId);
         return reactionRepository.findAllByEventId(eventId).stream()
                 .map(ReactionMapper::mapReactionToDtoResponse).toList();
-    };
+    }
 
     // Отправляем статистику на сервер
     private void sendStatisticToTheServer(HttpServletRequest request) {

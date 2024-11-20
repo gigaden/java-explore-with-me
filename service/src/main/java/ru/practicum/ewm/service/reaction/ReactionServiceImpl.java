@@ -2,7 +2,6 @@ package ru.practicum.ewm.service.reaction;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.ewm.dto.reaction.ReactionCreateDto;
@@ -14,7 +13,6 @@ import ru.practicum.ewm.entity.Reaction;
 import ru.practicum.ewm.entity.User;
 import ru.practicum.ewm.exception.ReactionNotFoundException;
 import ru.practicum.ewm.exception.ReactionValidationException;
-import ru.practicum.ewm.exception.UserNotFoundException;
 import ru.practicum.ewm.mapper.ReactionMapper;
 import ru.practicum.ewm.repository.ReactionRepository;
 import ru.practicum.ewm.service.event.EventService;
