@@ -49,8 +49,7 @@ public class AdminEventController {
         LocalDateTime decodedEnd = rangeEnd != null ? LocalDateTime.parse(URLDecoder.decode(rangeEnd, StandardCharsets.UTF_8), formatter) : null;
 
         Collection<EventResponseDto> events = eventService.getAllEventsByParam(users, states, categories,
-                        decodedStart, decodedEnd, from, size).stream()
-                .map(EventMapper::mapEventToResponseDto).toList();
+                        decodedStart, decodedEnd, from, size);
 
         return new ResponseEntity<>(events, HttpStatus.OK);
     }
@@ -63,7 +62,7 @@ public class AdminEventController {
     @PatchMapping("/{eventId}")
     public ResponseEntity<EventResponseDto> updateEventById(@PathVariable long eventId,
                                                             @Valid @RequestBody EventAdminUpdateDto dto) {
-        EventResponseDto event = EventMapper.mapEventToResponseDto(eventService.updateEventById(eventId, dto));
+        EventResponseDto event = eventService.updateEventById(eventId, dto);
 
         return new ResponseEntity<>(event, HttpStatus.OK);
 

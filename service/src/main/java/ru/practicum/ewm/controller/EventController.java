@@ -6,10 +6,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import ru.practicum.ewm.dto.event.EventParamRequest;
 import ru.practicum.ewm.dto.event.EventResponseDto;
-import ru.practicum.ewm.mapper.EventMapper;
 import ru.practicum.ewm.service.event.EventServiceImpl;
 
 import java.util.Collection;
@@ -38,8 +41,7 @@ public class EventController {
     public ResponseEntity<Collection<EventResponseDto>> getAllEventsPublic(@Valid @ModelAttribute EventParamRequest param,
                                                                            HttpServletRequest request) {
 
-        Collection<EventResponseDto> eventResponseDtos = eventService.getAllEventsPublic(param, request).stream()
-                .map(EventMapper::mapEventToResponseDto).toList();
+        Collection<EventResponseDto> eventResponseDtos = eventService.getAllEventsPublic(param, request);
 
         return new ResponseEntity<>(eventResponseDtos, HttpStatus.OK);
     }
@@ -54,7 +56,7 @@ public class EventController {
     public ResponseEntity<EventResponseDto> getEventByIdPublic(@PathVariable long id,
                                                                HttpServletRequest request) {
 
-        EventResponseDto eventResponseDto = EventMapper.mapEventToResponseDto(eventService.getEventByIdPublic(id, request));
+        EventResponseDto eventResponseDto = eventService.getEventByIdPublic(id, request);
 
         return new ResponseEntity<>(eventResponseDto, HttpStatus.OK);
     }
