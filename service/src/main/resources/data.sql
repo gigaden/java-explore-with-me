@@ -29,10 +29,6 @@ VALUES
 -- Добавление реакций (лайков) от пользователей
 INSERT INTO reactions (event_id, user_id, reaction_type, created_at) VALUES
                                                                          (1, -- ID события
-                                                                          2, -- ID пользователя 2
-                                                                          'LIKE',
-                                                                          NOW()),
-                                                                         (1, -- ID события
                                                                           3, -- ID пользователя 3
                                                                           'LIKE',
                                                                           NOW()),

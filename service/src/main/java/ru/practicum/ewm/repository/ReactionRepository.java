@@ -10,4 +10,6 @@ public interface ReactionRepository extends JpaRepository<Reaction, Long> {
     boolean existsByIdAndUserId(long reactId, long userId);
 
     List<Reaction> findAllByEventId(long eventId);
+
+    boolean existsByEventIdAndUserId(long eventId, long userId);
 }

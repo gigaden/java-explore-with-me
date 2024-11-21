@@ -53,10 +53,12 @@ public class ReactionServiceImpl implements ReactionService {
 
     // Обновляем реакцию пользователя
     @Override
-    public ReactionResponseDto changeReaction(ReactionUpdateDto dto, long reactId) {
+    public ReactionResponseDto changeReaction(ReactionUpdateDto dto, long userId, long reactId) {
         log.info("Пытаюсь изменить реакцию с id = {} на значение = {}", reactId, dto.getReaction());
 
+        checkUserMadeThisReaction(reactId, userId);
         final Reaction reaction = getReactionById(reactId);
+
         reaction.setReaction(dto.getReaction());
         reactionRepository.save(reaction);
         log.info("Реакция с id = {} на значение = {}", reactId, dto.getReaction());
@@ -103,10 +105,14 @@ public class ReactionServiceImpl implements ReactionService {
             log.warn("Юзер id = {} попытался поставить реакцию неопубликованному событию id = {}", user.getId(), event.getId());
             throw new ReactionValidationException("Нельзя ставить реакцию неопубликованным событиям");
         }
+        if (reactionRepository.existsByEventIdAndUserId(event.getId(), user.getId())) {
+            log.warn("Юзер с id = {} уже проставил эту реакцию событию с id = {}", user.getId(), event.getId());
+            throw new ReactionValidationException("Нельзя повторно поставить аналогичную реакцию");
+        }
     }
 
 
-    // Проверяем что именно этот пользователь поставил реакция
+    // Проверяем что именно этот пользователь поставил реакцию
     public void checkUserMadeThisReaction(long reactId, long userId) {
         if (!reactionRepository.existsByIdAndUserId(reactId, userId)) {
             log.warn("Пользователь с id = {} не ставил реакцию с id = {}", userId, reactId);

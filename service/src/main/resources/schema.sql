@@ -76,5 +76,6 @@ CREATE TABLE IF NOT EXISTS reactions
     event_id BIGINT REFERENCES events (id) ON DELETE CASCADE,
     user_id BIGINT REFERENCES users (id) ON DELETE CASCADE,
     reaction_type VARCHAR(30) NOT NULL,
-    created_at TIMESTAMP WITHOUT TIME ZONE NOT NULL
+    created_at TIMESTAMP WITHOUT TIME ZONE NOT NULL,
+    CONSTRAINT unique_user_event_reaction_type UNIQUE (user_id, event_id, reaction_type)
 );
