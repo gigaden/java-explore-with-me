@@ -1,9 +1,9 @@
 {
 	"info": {
-		"_postman_id": "7e3d7f07-67d8-4459-ae41-d7a5a8fb9c36",
+		"_postman_id": "4adcb8fb-9bea-4229-84cb-a449de2f861c",
 		"name": "reactions",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "38661674"
+		"_exporter_id": "25033897"
 	},
 	"item": [
 		{
@@ -167,7 +167,7 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:8080/reactions/4",
+					"raw": "http://localhost:8080/reactions/2/3",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -175,7 +175,8 @@
 					"port": "8080",
 					"path": [
 						"reactions",
-						"4"
+						"2",
+						"3"
 					]
 				}
 			},
@@ -201,7 +202,7 @@
 				"method": "DELETE",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:8080/reactions/4/2",
+					"raw": "http://localhost:8080/reactions/3/2",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -209,7 +210,7 @@
 					"port": "8080",
 					"path": [
 						"reactions",
-						"4",
+						"3",
 						"2"
 					]
 				}
@@ -238,7 +239,7 @@
 				"method": "DELETE",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:8080/reactions/2/4",
+					"raw": "http://localhost:8080/reactions/1/4",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -246,7 +247,7 @@
 					"port": "8080",
 					"path": [
 						"reactions",
-						"2",
+						"1",
 						"4"
 					]
 				}
