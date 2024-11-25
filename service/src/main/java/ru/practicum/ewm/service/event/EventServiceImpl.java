@@ -16,11 +16,15 @@ import ru.practicum.dto.StatisticDtoResponse;
 import ru.practicum.ewm.dto.event.EventAdminUpdateDto;
 import ru.practicum.ewm.dto.event.EventParamRequest;
 import ru.practicum.ewm.dto.event.EventRequestDto;
+import ru.practicum.ewm.dto.event.EventResponseDto;
+import ru.practicum.ewm.dto.reaction.ReactionResponseDto;
 import ru.practicum.ewm.entity.*;
 import ru.practicum.ewm.exception.EventNotFoundException;
 import ru.practicum.ewm.exception.EventValidationException;
 import ru.practicum.ewm.mapper.EventMapper;
+import ru.practicum.ewm.mapper.ReactionMapper;
 import ru.practicum.ewm.repository.EventRepository;
+import ru.practicum.ewm.repository.ReactionRepository;
 import ru.practicum.ewm.service.category.CategoryService;
 import ru.practicum.ewm.service.user.UserService;
 import ru.practicum.statistics.StatisticClient;
@@ -38,6 +42,7 @@ public class EventServiceImpl implements EventService {
     private final EventRepository eventRepository;
     private final UserService userService;
     private final CategoryService categoryService;
+    private final ReactionRepository reactionRepository;
     private final StatisticClient statisticClient;
     private final String appName;
 
@@ -54,29 +59,33 @@ public class EventServiceImpl implements EventService {
     public EventServiceImpl(EventRepository eventRepository,
                             UserService userService,
                             CategoryService categoryService,
+                            ReactionRepository reactionRepository,
                             StatisticClient statisticClient,
                             @Value("${application.name}") String appName) {
         this.eventRepository = eventRepository;
         this.userService = userService;
         this.categoryService = categoryService;
+        this.reactionRepository = reactionRepository;
         this.statisticClient = statisticClient;
         this.appName = appName;
     }
 
 
     @Override
-    public Collection<Event> getAllUsersEvents(long userId, int from, int size) {
+    public Collection<EventResponseDto> getAllUsersEvents(long userId, int from, int size) {
         log.info("Пытаюсь получить все события пользователя {}", userId);
         userService.checkUserIsExist(userId);
         Collection<Event> events = eventRepository.findUserEventsBetweenFromAndSize(from, size, userId);
         log.info("Получены все события пользователя {}", userId);
 
-        return events;
+        return events.stream()
+                .map(el -> EventMapper.mapEventToResponseDto(el, getEventsReactions(el.getId())))
+                .toList();
     }
 
     @Override
     @Transactional
-    public Event createEvent(long userId, EventRequestDto eventDto) {
+    public EventResponseDto createEvent(long userId, EventRequestDto eventDto) {
         log.info("Пытаюсь создать новое событие {}", eventDto);
 
         if (eventDto.getEventDate().isBefore(LocalDateTime.now().plusHours(2))) {
@@ -96,11 +105,11 @@ public class EventServiceImpl implements EventService {
         event.setConfirmedRequests(0);
         event.setViews(0L);
 
-        return event;
+        return EventMapper.mapEventToResponseDto(event, List.of());
     }
 
     @Override
-    public Event getUserEventsById(long userId, long eventId) {
+    public EventResponseDto getUserEventsById(long userId, long eventId) {
         log.info("Пытаюсь получить событие с id = {} пользователя с id = {}", eventId, userId);
         userService.checkUserIsExist(userId);
         Event event = eventRepository.findEventByIdAndInitiatorId(eventId, userId)
@@ -109,7 +118,7 @@ public class EventServiceImpl implements EventService {
                     return new EventNotFoundException("");
                 });
         log.info("Событие с id = {} пользователя с id = {} получено", eventId, userId);
-        return event;
+        return EventMapper.mapEventToResponseDto(event, getEventsReactions(eventId));
     }
 
     @Override
@@ -134,7 +143,7 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public Collection<Event> getAllEventsByParam(List<Long> users, List<EventState> states, List<Long> categories, LocalDateTime rangeStart, LocalDateTime rangeEnd, int from, int size) {
+    public Collection<EventResponseDto> getAllEventsByParam(List<Long> users, List<EventState> states, List<Long> categories, LocalDateTime rangeStart, LocalDateTime rangeEnd, int from, int size) {
         log.info("Пытаюсь получить коллекцию событий с параметрами");
         QEvent event = QEvent.event;
         BooleanBuilder builder = new BooleanBuilder();
@@ -165,12 +174,14 @@ public class EventServiceImpl implements EventService {
 
         log.info("Коллекция событий с параметрами получена");
 
-        return events;
+        return events.stream()
+                .map(el -> EventMapper.mapEventToResponseDto(el, getEventsReactions(el.getId())))
+                .toList();
     }
 
     @Override
     @Transactional
-    public Event updateEventById(long eventId, EventAdminUpdateDto dto) {
+    public EventResponseDto updateEventById(long eventId, EventAdminUpdateDto dto) {
         log.info("Пытаюсь обновить событие с id = {}", eventId);
         Event event = getEventById(eventId);
 
@@ -180,12 +191,12 @@ public class EventServiceImpl implements EventService {
         eventRepository.save(event);
         log.info("Обновлено событие с id = {}", eventId);
 
-        return event;
+        return EventMapper.mapEventToResponseDto(event, getEventsReactions(eventId));
     }
 
     @Override
     @Transactional
-    public Event updateEventByCurrentUser(long userId, long eventId, EventAdminUpdateDto dto) {
+    public EventResponseDto updateEventByCurrentUser(long userId, long eventId, EventAdminUpdateDto dto) {
         log.info("Попытка пользователя с id = {} обновить событие с id = {}", userId, eventId);
         Event event = getEventById(eventId);
         User user = userService.getUserById(userId);
@@ -196,12 +207,12 @@ public class EventServiceImpl implements EventService {
         eventRepository.save(event);
         log.info("Пользователь с id = {} обновил событие с id = {}", userId, eventId);
 
-        return event;
+        return EventMapper.mapEventToResponseDto(event, getEventsReactions(eventId));
     }
 
     // Получаем все опубликованные события, исходя из параметров
     @Override
-    public Collection<Event> getAllEventsPublic(EventParamRequest param, HttpServletRequest statRequest) {
+    public Collection<EventResponseDto> getAllEventsPublic(EventParamRequest param, HttpServletRequest statRequest) {
         log.info("Пытаюсь получить публичную коллекцию событий с параметрами {}", param);
         QEvent event = QEvent.event;
         QRequest request = QRequest.request;
@@ -261,14 +272,16 @@ public class EventServiceImpl implements EventService {
         log.info("Публичная коллекция событий с параметрами получена");
         sendStatisticToTheServer(statRequest);
 
-        return events;
+        return events.stream()
+                .map(el -> EventMapper.mapEventToResponseDto(el, getEventsReactions(el.getId())))
+                .toList();
     }
 
 
     // Получаем опубликованное событие по id
     @Override
     @Transactional
-    public Event getEventByIdPublic(long id, HttpServletRequest request) {
+    public EventResponseDto getEventByIdPublic(long id, HttpServletRequest request) {
         log.info("Пытаюсь получить опубликованное событие с id = {}", id);
         Event event = eventRepository.findEventByIdAndState(id, EventState.PUBLISHED)
                 .orElseThrow(() -> {
@@ -286,7 +299,15 @@ public class EventServiceImpl implements EventService {
 
         eventRepository.save(event);
 
-        return event;
+        return EventMapper.mapEventToResponseDto(event, getEventsReactions(id));
+    }
+
+
+    // Получаем список реакций на событие
+    public List<ReactionResponseDto> getEventsReactions(long eventId) {
+        log.info("Получаем список реакция для события с id = {}", eventId);
+        return reactionRepository.findAllByEventId(eventId).stream()
+                .map(ReactionMapper::mapReactionToDtoResponse).toList();
     }
 
     // Отправляем статистику на сервер

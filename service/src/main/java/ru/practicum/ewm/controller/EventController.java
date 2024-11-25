@@ -9,7 +9,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.ewm.dto.event.EventParamRequest;
 import ru.practicum.ewm.dto.event.EventResponseDto;
-import ru.practicum.ewm.mapper.EventMapper;
 import ru.practicum.ewm.service.event.EventServiceImpl;
 
 import java.util.Collection;
@@ -38,8 +37,7 @@ public class EventController {
     public ResponseEntity<Collection<EventResponseDto>> getAllEventsPublic(@Valid @ModelAttribute EventParamRequest param,
                                                                            HttpServletRequest request) {
 
-        Collection<EventResponseDto> eventResponseDtos = eventService.getAllEventsPublic(param, request).stream()
-                .map(EventMapper::mapEventToResponseDto).toList();
+        Collection<EventResponseDto> eventResponseDtos = eventService.getAllEventsPublic(param, request);
 
         return new ResponseEntity<>(eventResponseDtos, HttpStatus.OK);
     }
@@ -54,7 +52,7 @@ public class EventController {
     public ResponseEntity<EventResponseDto> getEventByIdPublic(@PathVariable long id,
                                                                HttpServletRequest request) {
 
-        EventResponseDto eventResponseDto = EventMapper.mapEventToResponseDto(eventService.getEventByIdPublic(id, request));
+        EventResponseDto eventResponseDto = eventService.getEventByIdPublic(id, request);
 
         return new ResponseEntity<>(eventResponseDto, HttpStatus.OK);
     }

@@ -12,7 +12,6 @@ import ru.practicum.ewm.dto.event.EventResponseDto;
 import ru.practicum.ewm.dto.request.RequestResponseDto;
 import ru.practicum.ewm.dto.request.RequestsAfterChangesDto;
 import ru.practicum.ewm.dto.request.RequestsToChangeDto;
-import ru.practicum.ewm.mapper.EventMapper;
 import ru.practicum.ewm.mapper.RequestMapper;
 import ru.practicum.ewm.service.event.EventService;
 import ru.practicum.ewm.service.request.RequestService;
@@ -42,8 +41,7 @@ public class UserEventController {
     public ResponseEntity<Collection<EventResponseDto>> getEvents(@PathVariable long userId,
                                                                   @RequestParam(defaultValue = "0") int from,
                                                                   @RequestParam(defaultValue = "10") int size) {
-        Collection<EventResponseDto> events = eventService.getAllUsersEvents(userId, from, size).stream()
-                .map(EventMapper::mapEventToResponseDto).toList();
+        Collection<EventResponseDto> events = eventService.getAllUsersEvents(userId, from, size);
 
 
         return new ResponseEntity<>(events, HttpStatus.OK);
@@ -54,7 +52,7 @@ public class UserEventController {
     @PostMapping
     public ResponseEntity<EventResponseDto> createEvent(@PathVariable long userId,
                                                         @Valid @RequestBody EventRequestDto eventDto) {
-        EventResponseDto event = EventMapper.mapEventToResponseDto(eventService.createEvent(userId, eventDto));
+        EventResponseDto event = eventService.createEvent(userId, eventDto);
 
         return new ResponseEntity<>(event, HttpStatus.CREATED);
     }
@@ -64,7 +62,7 @@ public class UserEventController {
     @GetMapping("/{eventId}")
     public ResponseEntity<EventResponseDto> getUserEventsById(@PathVariable long userId,
                                                               @PathVariable long eventId) {
-        EventResponseDto event = EventMapper.mapEventToResponseDto(eventService.getUserEventsById(userId, eventId));
+        EventResponseDto event = eventService.getUserEventsById(userId, eventId);
 
         return new ResponseEntity<>(event, HttpStatus.OK);
     }
@@ -100,8 +98,8 @@ public class UserEventController {
     public ResponseEntity<EventResponseDto> changeEventByUser(@PathVariable long userId,
                                                               @PathVariable long eventId,
                                                               @Valid @RequestBody EventAdminUpdateDto dto) {
-        EventResponseDto event = EventMapper.mapEventToResponseDto(eventService
-                .updateEventByCurrentUser(userId, eventId, dto));
+        EventResponseDto event = eventService
+                .updateEventByCurrentUser(userId, eventId, dto);
 
         return new ResponseEntity<>(event, HttpStatus.OK);
     }

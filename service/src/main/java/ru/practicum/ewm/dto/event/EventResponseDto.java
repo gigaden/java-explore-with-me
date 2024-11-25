@@ -6,11 +6,13 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import ru.practicum.ewm.dto.category.CategoryResponseDto;
+import ru.practicum.ewm.dto.reaction.ReactionResponseDto;
 import ru.practicum.ewm.dto.user.UserResponseDto;
 import ru.practicum.ewm.entity.EventState;
 import ru.practicum.ewm.entity.Location;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 @Builder
@@ -51,4 +53,6 @@ public class EventResponseDto {
     private String title;
 
     private long views;
+
+    private List<ReactionResponseDto> reactions;
 }

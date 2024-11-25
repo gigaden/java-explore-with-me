@@ -60,6 +60,14 @@ public class ErrorHandler {
     }
 
     @ExceptionHandler
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public Map<String, String> handleReactionNotFound(final ReactionNotFoundException e, WebRequest request) {
+        log.error("Ошибка 404 ReactionNotFoundException: {} в запросе {}",
+                e.getMessage(), request.getDescription(false));
+        return buildErrorResponse(e, HttpStatus.NOT_FOUND, e.getReason());
+    }
+
+    @ExceptionHandler
     @ResponseStatus(HttpStatus.CONFLICT)
     public Map<String, String> handleCategoryValidation(final CategoryValidationException e, WebRequest request) {
         log.error("Ошибка 400 CategoryValidationException: {} в запросе {}",
@@ -95,6 +103,14 @@ public class ErrorHandler {
     @ResponseStatus(HttpStatus.CONFLICT)
     public Map<String, String> handleUserValidation(final UserValidationException e, WebRequest request) {
         log.error("Ошибка 409 UserValidationException: {} в запросе {}",
+                e.getMessage(), request.getDescription(false));
+        return buildErrorResponse(e, HttpStatus.CONFLICT, e.getReason());
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public Map<String, String> handleReactionValidation(final ReactionValidationException e, WebRequest request) {
+        log.error("Ошибка 409 ReactionValidationException: {} в запросе {}",
                 e.getMessage(), request.getDescription(false));
         return buildErrorResponse(e, HttpStatus.CONFLICT, e.getReason());
     }

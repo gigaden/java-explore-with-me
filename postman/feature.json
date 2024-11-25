@@ -1,0 +1,258 @@
+{
+	"info": {
+		"_postman_id": "4adcb8fb-9bea-4229-84cb-a449de2f861c",
+		"name": "reactions",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "25033897"
+	},
+	"item": [
+		{
+			"name": "Создание новой реакции",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Ответ должен содержать статус 201\", function() {",
+							"    pm.expect(pm.response.code).to.equal(201);",
+							"    pm.response.to.be.withBody;",
+							"    pm.response.to.be.json;",
+							"});",
+							"",
+							"pm.test(\"Ответ должен содержать данные в формате JSON\", function() {",
+							"    const body = pm.response.json();",
+							"    pm.expect(body).to.be.an('object'); // Проверка, что тело ответа - объект",
+							"});",
+							"",
+							"pm.test(\"Ответ должен содержать нужные поля\", function() {",
+							"    const body = pm.response.json();",
+							"",
+							"    // Проверяем наличие полей",
+							"    pm.expect(body).to.have.property('event', 1); // Проверка, что eventId совпадает",
+							"    pm.expect(body).to.have.property('user', 2); // Проверка, что userId совпадает",
+							"    pm.expect(body).to.have.property('reaction', 'DISLIKE'); // Проверка типа реакции",
+							"    pm.expect(body).to.have.property('createdAt'); // Поле createdAt должно быть в ответе",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"eventId\" : 1,\n    \"userId\" : 2,\n    \"reaction\" : \"DISLIKE\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/reactions",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"reactions"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Получение реакций в событии",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Ответ должен содержать статус 200\", function() {",
+							"    pm.expect(pm.response.code).to.equal(200);",
+							"    pm.response.to.be.withBody;",
+							"    pm.response.to.be.json;",
+							"});",
+							"",
+							"pm.test(\"Ответ должен содержать данные в формате JSON\", function() {",
+							"    const body = pm.response.json();",
+							"    pm.expect(body).to.be.an('object'); // Проверка, что тело ответа - объект",
+							"});",
+							"",
+							"pm.test(\"Ответ должен содержать нужные поля\", function() {",
+							"    const body = pm.response.json();",
+							"",
+							"    // Проверяем наличие полей",
+							"    pm.expect(body).to.have.property('reactions');",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/events/1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"events",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Изменение реакции",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Ответ должен содержать статус 200\", function() {",
+							"    pm.expect(pm.response.code).to.equal(200);",
+							"    pm.response.to.be.withBody;",
+							"    pm.response.to.be.json;",
+							"});",
+							"",
+							"pm.test(\"Ответ должен содержать данные в формате JSON\", function() {",
+							"    const body = pm.response.json();",
+							"    pm.expect(body).to.be.an('object'); // Проверка, что тело ответа - объект",
+							"});",
+							"",
+							"pm.test(\"Ответ должен содержать нужные поля\", function() {",
+							"    const body = pm.response.json();",
+							"",
+							"    // Проверяем наличие полей",
+							"    pm.expect(body).to.have.property('reaction', 'LIKE');",
+							"});",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "PATCH",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"reaction\" : \"LIKE\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/reactions/2/3",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"reactions",
+						"2",
+						"3"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Удаление реакции",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Ответ должен содержать статус 204\", function() {",
+							"    pm.expect(pm.response.code).to.equal(204);",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/reactions/3/2",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"reactions",
+						"3",
+						"2"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Удаление чужой реакции",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Ответ должен содержать статус 409\", function() {",
+							"    pm.expect(pm.response.code).to.equal(409);",
+							"    pm.response.to.be.withBody;",
+							"    pm.response.to.be.json;",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/reactions/1/4",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"reactions",
+						"1",
+						"4"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
