@@ -15,5 +15,5 @@ public class CommentResponseDto {
     private long id;
 
     @NotNull
-    private long text;
+    private String text;
 }
