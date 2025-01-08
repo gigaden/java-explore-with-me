@@ -132,5 +132,13 @@ public class ErrorHandler {
         return response;
     }
 
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public Map<String, String> handleCommentValidation(final CommentValidationException e, WebRequest request) {
+        log.error("Ошибка 409 CommentValidationException: {} в запросе {}",
+                e.getMessage(), request.getDescription(false));
+        return buildErrorResponse(e, HttpStatus.CONFLICT, e.getReason());
+    }
+
 
 }

@@ -17,4 +17,6 @@ public interface RequestService {
     Collection<Request> getAllRequestToUsersEvent(long userId, long eventId);
 
     RequestsAfterChangesDto changeRequestsStatus(long userId, long eventId, RequestsToChangeDto dto);
+
+    public boolean userWasInTheEvent(long userId, long eventId);
 }

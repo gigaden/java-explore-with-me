@@ -32,32 +32,17 @@ public class EventMapper {
 
     public static EventResponseDto mapEventToResponseDto(Event event, List<ReactionResponseDto> reactions) {
 
-        return EventResponseDto.builder()
-                .annotation(event.getAnnotation())
-                .category(CategoryMapper.mapToCategoryDto(event.getCategory()))
-                .confirmedRequests(event.getConfirmedRequests())
-                .createdOn(event.getCreatedOn())
-                .description(event.getDescription())
-                .eventDate(event.getEventDate())
-                .id(event.getId())
-                .initiator(UserMapper.mapToResponseUserDto(event.getInitiator()))
-                .location(Location.builder()
-                        .lon(event.getLocationLon())
-                        .lat(event.getLocationLat())
-                        .build())
-                .paid(event.isPaid())
-                .participantLimit(event.getParticipantLimit())
-                .publishedOn(event.getPublishedOn())
-                .requestModeration(event.isRequestModeration())
-                .state(event.getState())
-                .title(event.getTitle())
-                .views(event.getViews())
-                .reactions(reactions)
-                .build();
+        EventResponseDto dto = mapEventToResponseDtoBase(event);
+        dto.setReactions(reactions);
+        return dto;
     }
 
     public static EventResponseDto mapEventToResponseDto(Event event) {
 
+        return mapEventToResponseDtoBase(event);
+    }
+
+    private static EventResponseDto mapEventToResponseDtoBase(Event event) {
         return EventResponseDto.builder()
                 .annotation(event.getAnnotation())
                 .category(CategoryMapper.mapToCategoryDto(event.getCategory()))

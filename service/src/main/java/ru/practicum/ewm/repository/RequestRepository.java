@@ -30,5 +30,13 @@ public interface RequestRepository extends JpaRepository<Request, Long> {
             """)
     Collection<Request> getAllUserEventsRequests(long userId, long eventId);
 
+    // Проверяем принимал ли участием пользователь в данном событии
+//    @Query(value = """
+//                        SELECT CASE WHEN COUNT(r) > 0 THEN true ELSE false END
+//                        FROM Request r
+//                        WHERE r.event.id = :eventId AND r.requester.id = :userId AND r.status = :status
+//            """)
+//    boolean checkTheUserWasInTheEvent(long userId, long eventId, RequestStatus status);
 
+    boolean existsByRequesterIdAndEventIdAndStatus(long userId, long eventId, RequestStatus status);
 }

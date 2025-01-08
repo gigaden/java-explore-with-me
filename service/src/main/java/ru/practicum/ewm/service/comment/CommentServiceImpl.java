@@ -13,9 +13,13 @@ import ru.practicum.ewm.dto.comment.CommentResponseDto;
 import ru.practicum.ewm.entity.Comment;
 import ru.practicum.ewm.entity.Event;
 import ru.practicum.ewm.entity.QComment;
+import ru.practicum.ewm.entity.User;
+import ru.practicum.ewm.exception.CommentValidationException;
 import ru.practicum.ewm.mapper.CommentMapper;
 import ru.practicum.ewm.repository.CommentRepository;
 import ru.practicum.ewm.service.event.EventService;
+import ru.practicum.ewm.service.request.RequestService;
+import ru.practicum.ewm.service.user.UserService;
 
 import java.util.Collection;
 
@@ -24,13 +28,20 @@ import java.util.Collection;
 @Transactional(readOnly = true)
 public class CommentServiceImpl implements CommentService {
     private final EventService eventService;
+    private final UserService userService;
+    private final CommentRepository commentRepository;
+    private final RequestService requestService;
 
     @PersistenceContext
     private EntityManager entityManager;
 
     @Autowired
-    public CommentServiceImpl(EventService eventService) {
+    public CommentServiceImpl(EventService eventService, UserService userService,
+                              CommentRepository commentRepository, RequestService requestService) {
         this.eventService = eventService;
+        this.userService = userService;
+        this.commentRepository = commentRepository;
+        this.requestService = requestService;
     }
 
     // Ищем все комментарии события
@@ -59,7 +70,34 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
+    @Transactional
     public CommentResponseDto addCommentToEvent(CommentCreateDto dto) {
-        return null;
+        log.info("Пытаюсь добавить новый комментарий юзера id = {} к событию id = {}", dto.getUserId(), dto.getEventId());
+        Event event = eventService.getEventById(dto.getEventId());
+        User user = userService.getUserById(dto.getUserId());
+        checkComment(dto, user, event);
+
+        Comment comment = commentRepository
+                .save(CommentMapper.mapDtoToNewComment(user, event, dto.getText()));
+        log.info("Пользователь id = {} добавил комментарий к событию id = {}", user.getId(), event.getId());
+
+        return CommentMapper.mapCommentToDto(comment);
+    }
+
+    public void checkComment(CommentCreateDto dto, User user, Event event) {
+        if (dto.getText().isEmpty() || dto.getText().isBlank()) {
+            log.warn("Попытка оставить пустой комментарий");
+            throw new CommentValidationException("Не добавлен текст комментария");
+        }
+        // Проверяем, что юзер не оставляет коммент на своё событие
+        if (event.getInitiator().equals(user)) {
+            log.warn("Юзер пытается комментировать своё событие");
+            throw new CommentValidationException("Нельзя комментировать своё событие");
+        }
+        // Проверяем, что юзер был подписан на это событие
+        if (!requestService.userWasInTheEvent(user.getId(), event.getId())) {
+            log.warn("Юзер пытается комментировать событие, в котором не участвовал");
+            throw new CommentValidationException("Нельзя комментировать событие, в котором не участвовал");
+        }
     }
 }

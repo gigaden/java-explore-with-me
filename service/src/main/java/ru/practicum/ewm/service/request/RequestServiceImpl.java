@@ -268,4 +268,10 @@ public class RequestServiceImpl implements RequestService {
         resultRequests.setConfirmedRequests(confirmedRequest.stream().map(RequestMapper::mapRequestToDto).toList());
         resultRequests.setRejectedRequests(rejectedRequest.stream().map(RequestMapper::mapRequestToDto).toList());
     }
+
+    // Проверяем участие пользователя в событии
+    @Override
+    public boolean userWasInTheEvent(long userId, long eventId) {
+        return requestRepository.existsByRequesterIdAndEventIdAndStatus(userId, eventId, RequestStatus.CONFIRMED);
+    }
 }
