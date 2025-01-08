@@ -1,6 +1,5 @@
 package ru.practicum.ewm.mapper;
 
-import ru.practicum.ewm.dto.comment.CommentCreateDto;
 import ru.practicum.ewm.dto.comment.CommentResponseDto;
 import ru.practicum.ewm.entity.Comment;
 import ru.practicum.ewm.entity.Event;
