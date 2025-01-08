@@ -1,7 +1,11 @@
 package ru.practicum.ewm.dto.event;
 
 import jakarta.validation.constraints.Size;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;

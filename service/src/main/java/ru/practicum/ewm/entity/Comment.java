@@ -3,8 +3,6 @@ package ru.practicum.ewm.entity;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -20,12 +18,12 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "reactions")
+@Table(name = "comments")
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class Reaction {
+public class Comment {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -39,11 +37,10 @@ public class Reaction {
     @JoinColumn(name = "user_id")
     private User user;
 
-    @Column(name = "reaction_type")
-    @Enumerated(EnumType.STRING)
-    private ReactionType reaction;
+    @Column(name = "text")
+    private String text;
 
     @Column(name = "created_at")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime createdAt;
+    private LocalDateTime createdAt = LocalDateTime.now();
 }

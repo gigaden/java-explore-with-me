@@ -3,7 +3,11 @@ package ru.practicum.ewm.mapper;
 import ru.practicum.ewm.dto.event.EventRequestDto;
 import ru.practicum.ewm.dto.event.EventResponseDto;
 import ru.practicum.ewm.dto.reaction.ReactionResponseDto;
-import ru.practicum.ewm.entity.*;
+import ru.practicum.ewm.entity.Category;
+import ru.practicum.ewm.entity.Event;
+import ru.practicum.ewm.entity.EventState;
+import ru.practicum.ewm.entity.Location;
+import ru.practicum.ewm.entity.User;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -32,32 +36,17 @@ public class EventMapper {
 
     public static EventResponseDto mapEventToResponseDto(Event event, List<ReactionResponseDto> reactions) {
 
-        return EventResponseDto.builder()
-                .annotation(event.getAnnotation())
-                .category(CategoryMapper.mapToCategoryDto(event.getCategory()))
-                .confirmedRequests(event.getConfirmedRequests())
-                .createdOn(event.getCreatedOn())
-                .description(event.getDescription())
-                .eventDate(event.getEventDate())
-                .id(event.getId())
-                .initiator(UserMapper.mapToResponseUserDto(event.getInitiator()))
-                .location(Location.builder()
-                        .lon(event.getLocationLon())
-                        .lat(event.getLocationLat())
-                        .build())
-                .paid(event.isPaid())
-                .participantLimit(event.getParticipantLimit())
-                .publishedOn(event.getPublishedOn())
-                .requestModeration(event.isRequestModeration())
-                .state(event.getState())
-                .title(event.getTitle())
-                .views(event.getViews())
-                .reactions(reactions)
-                .build();
+        EventResponseDto dto = mapEventToResponseDtoBase(event);
+        dto.setReactions(reactions);
+        return dto;
     }
 
     public static EventResponseDto mapEventToResponseDto(Event event) {
 
+        return mapEventToResponseDtoBase(event);
+    }
+
+    private static EventResponseDto mapEventToResponseDtoBase(Event event) {
         return EventResponseDto.builder()
                 .annotation(event.getAnnotation())
                 .category(CategoryMapper.mapToCategoryDto(event.getCategory()))
